@@ -1,4 +1,4 @@
-package com.kersch.backend;
+package kersch.com.backend;
 
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;

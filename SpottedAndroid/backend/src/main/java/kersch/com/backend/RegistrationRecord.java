@@ -1,4 +1,4 @@
-package com.kersch.backend;
+package kersch.com.backend;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;

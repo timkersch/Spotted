@@ -13,7 +13,7 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.kersch.backend.RegistrationEndpoint, com.kersch.backend.MessagingEndpoint</param-value>
+            <param-value>kersch.com.backend.RegistrationEndpoint, kersch.com.backend.MessagingEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

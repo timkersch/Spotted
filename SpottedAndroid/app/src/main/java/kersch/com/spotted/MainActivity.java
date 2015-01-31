@@ -1,10 +1,7 @@
 package kersch.com.spotted;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,7 +12,9 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		//new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
+
+		// Start Async task to Register device
+		new GcmRegistrationAsyncTask(this).execute();
 	}
 
 	@Override
