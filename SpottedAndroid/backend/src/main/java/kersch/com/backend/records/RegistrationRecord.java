@@ -1,4 +1,4 @@
-package kersch.com.backend;
+package kersch.com.backend.records;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -11,7 +11,7 @@ import com.googlecode.objectify.annotation.Index;
 public class RegistrationRecord {
 
 	@Id
-	Long id;
+	private Long id;
 
 	@Index
 	private String regId;

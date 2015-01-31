@@ -1,20 +1,34 @@
-package kersch.com.spotted;
+package kersch.com.spotted.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import kersch.com.spotted.gcmServices.GcmMessageSender;
+import kersch.com.spotted.gcmServices.*;
+import kersch.com.spotted.R;
 
 
 public class MainActivity extends ActionBarActivity {
+
+	public static final boolean LOCAL = false;
+	public static final String PROPERTY_REG_ID = "registration_id";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// Start Async task to Register device
-		new GcmRegistrationAsyncTask(this).execute();
+		SharedPreferences sp = getSharedPreferences(MainActivity.class.getSimpleName(),Context.MODE_PRIVATE);
+
+		if(getRegistrationId(sp).isEmpty()) {
+			// Start Async task to Register device
+			new GcmRegistration(this, sp).execute();
+		}
+
+		new GcmMessageSender(this).execute("0", "Tim");
 	}
 
 	@Override
@@ -38,4 +52,15 @@ public class MainActivity extends ActionBarActivity {
 
 		return super.onOptionsItemSelected(item);
 	}
+
+	private String getRegistrationId(SharedPreferences sp) {
+		final SharedPreferences prefs = sp;
+		String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+
+		if (registrationId.isEmpty()) {
+			return "";
+		}
+		return registrationId;
+	}
+
 }

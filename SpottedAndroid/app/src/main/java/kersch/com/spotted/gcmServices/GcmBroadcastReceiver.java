@@ -1,4 +1,4 @@
-package kersch.com.spotted;
+package kersch.com.spotted.gcmServices;
 
 import android.app.Activity;
 import android.content.ComponentName;

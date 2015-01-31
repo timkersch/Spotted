@@ -4,18 +4,19 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/GcmEndpoints
 */
 
-package kersch.com.backend;
+package kersch.com.backend.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import kersch.com.backend.records.RegistrationRecord;
 
 import java.util.List;
 import java.util.logging.Logger;
 import javax.inject.Named;
 
-import static kersch.com.backend.OfyService.ofy;
+import static kersch.com.backend.utils.OfyService.ofy;
 
 /**
  * A registration endpoint class we are exposing for a device's GCM registration id on the backend
