@@ -3,8 +3,8 @@ package kersch.com.backend.utils;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import kersch.com.backend.records.PinRecord;
 import kersch.com.backend.records.RegistrationRecord;
-import kersch.com.backend.records.UserRecord;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
@@ -14,7 +14,8 @@ public class OfyService {
 
 	static {
 		factory().register(RegistrationRecord.class);
-		factory().register(UserRecord.class);
+		factory().register(PinRecord.class);
+		// Add other records here
 	}
 
 	public static Objectify ofy() {

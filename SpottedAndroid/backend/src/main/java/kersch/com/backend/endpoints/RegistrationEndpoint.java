@@ -10,6 +10,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import kersch.com.backend.records.PinRecord;
 import kersch.com.backend.records.RegistrationRecord;
 
 import java.util.List;
@@ -39,16 +40,23 @@ public class RegistrationEndpoint {
 	 * @param regId The Google Cloud Messaging registration Id to add
 	 */
 	@ApiMethod(name = "register")
-	public void registerDevice(@Named("regId") String regId) {
+	public void registerDevice( @Named("regId") String regId, @Named("fname") String fName,
+	                            @Named("lname") String lName, @Named("userName") String userName,
+								@Named("email") String eMail, @Named("password") String pass) {
 		if (findRecord(regId) != null) {
 			log.info("Device " + regId + " already registered, skipping register");
 			return;
 		}
 		RegistrationRecord record = new RegistrationRecord();
 		record.setRegId(regId);
+		record.setFirstName(fName);
+		record.setLastName(lName);
+		record.setUserName(userName);
+		record.seteMail(eMail);
+		record.setPassword(pass);
+
 		ofy().save().entity(record).now();
 	}
-
 	/**
 	 * Unregister a device from the backend
 	 *
@@ -70,9 +78,20 @@ public class RegistrationEndpoint {
 	 * @param count The number of devices to list
 	 * @return a list of Google Cloud Messaging registration Ids
 	 */
-	@ApiMethod(name = "listDevices")
-	public CollectionResponse<RegistrationRecord> listDevices(@Named("count") int count) {
+	@ApiMethod(name = "listDevicesWithLimit")
+	public CollectionResponse<RegistrationRecord> listDevicesWithLimit(@Named("count") int count) {
 		List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).limit(count).list();
+		return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
+	}
+
+	/**
+	 * Return a collection of registered devices
+	 *
+	 * @return a list of Google Cloud Messaging registration Ids
+	 */
+	@ApiMethod(name = "listDevices")
+	public CollectionResponse<RegistrationRecord> listDevices() {
+		List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
 		return CollectionResponse.<RegistrationRecord>builder().setItems(records).build();
 	}
 

@@ -6,18 +6,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import kersch.com.spotted.gcmServices.GcmMessageSender;
+import android.widget.Toast;
+import kersch.com.spotted.gcmServices.GcmPin;
 import kersch.com.spotted.gcmServices.*;
 import kersch.com.spotted.R;
+import kersch.com.spotted.utils.Constants;
 
 
 public class MainActivity extends ActionBarActivity {
 
-	public static final boolean LOCAL = false;
-	public static final String PROPERTY_REG_ID = "registration_id";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -25,10 +25,19 @@ public class MainActivity extends ActionBarActivity {
 
 		if(getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device
-			new GcmRegistration(this, sp).execute();
+			new GcmUser("Tim", "Kerschbaumer", "timkersch", "tim.kersch@gmail.com", "pass", this, sp).execute();
+		} else {
+			Toast.makeText(this, "Already registered with id " + sp.getString(Constants.PROPERTY_REG_ID, ""), Toast.LENGTH_LONG).show();
 		}
 
-		new GcmMessageSender(this).execute("0", "Tim");
+		double latitude = 16.4553;
+		double longitude = 64.6543;
+		String message = "This is the first pin";
+
+		// Start Async task to send location to server
+		new GcmPin(latitude+50, longitude+50, message, this).execute(sp.getString(Constants.PROPERTY_REG_ID, ""));
+		new GcmPin(latitude-60, longitude-50, message + " - 2", this).execute(sp.getString(Constants.PROPERTY_REG_ID, ""));
+
 	}
 
 	@Override
@@ -55,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
 
 	private String getRegistrationId(SharedPreferences sp) {
 		final SharedPreferences prefs = sp;
-		String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+		String registrationId = prefs.getString(Constants.PROPERTY_REG_ID, "");
 
 		if (registrationId.isEmpty()) {
 			return "";
