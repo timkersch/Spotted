@@ -10,7 +10,6 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import kersch.com.backend.records.PinRecord;
 import kersch.com.backend.records.RegistrationRecord;
 
 import java.util.List;
@@ -40,20 +39,13 @@ public class RegistrationEndpoint {
 	 * @param regId The Google Cloud Messaging registration Id to add
 	 */
 	@ApiMethod(name = "register")
-	public void registerDevice( @Named("regId") String regId, @Named("fname") String fName,
-	                            @Named("lname") String lName, @Named("userName") String userName,
-								@Named("email") String eMail, @Named("password") String pass) {
+	public void registerDevice(@Named("regId") String regId) {
 		if (findRecord(regId) != null) {
 			log.info("Device " + regId + " already registered, skipping register");
 			return;
 		}
 		RegistrationRecord record = new RegistrationRecord();
 		record.setRegId(regId);
-		record.setFirstName(fName);
-		record.setLastName(lName);
-		record.setUserName(userName);
-		record.seteMail(eMail);
-		record.setPassword(pass);
 
 		ofy().save().entity(record).now();
 	}

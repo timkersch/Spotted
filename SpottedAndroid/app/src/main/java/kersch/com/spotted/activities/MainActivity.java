@@ -7,11 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import kersch.com.spotted.gcmServices.GcmPin;
+import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.gcmServices.*;
 import kersch.com.spotted.R;
 import kersch.com.spotted.utils.Constants;
-
 
 public class MainActivity extends ActionBarActivity {
 
@@ -25,18 +24,27 @@ public class MainActivity extends ActionBarActivity {
 
 		if(getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device
-			new GcmUser("Tim", "Kerschbaumer", "timkersch", "tim.kersch@gmail.com", "pass", this, sp).execute();
+			new GcmRegistration(this, sp).execute();
 		} else {
 			Toast.makeText(this, "Already registered with id " + sp.getString(Constants.PROPERTY_REG_ID, ""), Toast.LENGTH_LONG).show();
 		}
 
-		double latitude = 16.4553;
-		double longitude = 64.6543;
-		String message = "This is the first pin";
+		float latitude = 0.0f;
+		float longitude = 0.0f;
+		String message = "Testing";
 
 		// Start Async task to send location to server
-		new GcmPin(latitude+50, longitude+50, message, this).execute(sp.getString(Constants.PROPERTY_REG_ID, ""));
-		new GcmPin(latitude-60, longitude-50, message + " - 2", this).execute(sp.getString(Constants.PROPERTY_REG_ID, ""));
+		final Pin a = new Pin(latitude, longitude, message + " - 1", this);
+		a.execute();
+		Pin b = new Pin(latitude, longitude, message + " - 2", this);
+		b.execute();
+
+		try {
+			Thread.sleep(2000);
+			a.printPins();
+		} catch (InterruptedException e) {
+
+		}
 
 	}
 
