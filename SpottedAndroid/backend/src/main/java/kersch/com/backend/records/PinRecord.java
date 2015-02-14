@@ -6,6 +6,7 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by: Tim Kerschbaumer
@@ -20,6 +21,8 @@ public class PinRecord {
 	private Long id;
 
 	@Index
+	private String title;
+
 	// Geographical location
 	private GeoPt geoPoint;
 
@@ -29,12 +32,50 @@ public class PinRecord {
 	// The message associated with the pin
 	private String message;
 
+	private long lifeLengthInMilliseconds;
+
+	private List<String> responses;
+
+	public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	public List<String> getResponses() {
+		return responses;
+	}
+
+	public void setResponses(List<String> responses) {
+		this.responses = responses;
+	}
+
+	private int likes;
+
 	public Date getTimeStamp() {
 		return date;
 	}
 
 	public void setTimeStamp(Date date) {
 		this.date = date;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public long getLifeLengthInMilliseconds() {
+		return lifeLengthInMilliseconds;
+	}
+
+	public void setLifeLengthInMilliseconds(long lifeTime) {
+		this.lifeLengthInMilliseconds = lifeTime;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getMessage() {

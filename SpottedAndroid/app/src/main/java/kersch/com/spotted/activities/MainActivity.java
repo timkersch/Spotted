@@ -1,7 +1,9 @@
 package kersch.com.spotted.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +13,10 @@ import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.gcmServices.*;
 import kersch.com.spotted.R;
 import kersch.com.spotted.utils.Constants;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -24,28 +30,23 @@ public class MainActivity extends ActionBarActivity {
 
 		if(getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device
-			new GcmRegistration(this, sp).execute();
+			AsyncTask<Void, Void, String> task = new GcmRegistration(this, sp);
+			try {
+				task.get(3000, TimeUnit.MILLISECONDS);
+			} catch (TimeoutException e) {
+
+			} catch (ExecutionException e) {
+
+			} catch (InterruptedException e) {
+
+			}
+
 		} else {
-			Toast.makeText(this, "Already registered with id " + sp.getString(Constants.PROPERTY_REG_ID, ""), Toast.LENGTH_LONG).show();
+			//Toast.makeText(this, "Already registered with id " + sp.getString(Constants.PROPERTY_REG_ID, ""), Toast.LENGTH_LONG).show();
 		}
 
-		float latitude = 0.0f;
-		float longitude = 0.0f;
-		String message = "Testing";
-
-		// Start Async task to send location to server
-		final Pin a = new Pin(latitude, longitude, message + " - 1", this);
-		a.execute();
-		Pin b = new Pin(latitude, longitude, message + " - 2", this);
-		b.execute();
-
-		try {
-			Thread.sleep(2000);
-			a.printPins();
-		} catch (InterruptedException e) {
-
-		}
-
+		Intent intent = new Intent(this, MapActivity.class);
+		this.startActivity(intent);
 	}
 
 	@Override

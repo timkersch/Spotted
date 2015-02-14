@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.GeoPt;
 import kersch.com.backend.records.PinRecord;
+import kersch.com.backend.records.RegistrationRecord;
 
 import javax.inject.Named;
 
@@ -27,15 +28,29 @@ public class PinEndpoint {
 	private static final Logger log = Logger.getLogger(PinEndpoint.class.getName());
 
 	@ApiMethod(name = "registerpin")
-	public void registerPin(@Named("latitude") float latitude,
-	                           @Named("longitude") float longitude, @Named("message") String message) {
+	public void registerPin(@Named("title") String title,
+	                        @Named("message") String message,
+	                        @Named("lifetime") long lifetime,
+	                        GeoPt geoPt) {
 
 		PinRecord record = new PinRecord();
-		record.setGeoPoint(latitude, longitude);
+		record.setTitle(title);
+		record.setLifeLengthInMilliseconds(lifetime);
+		record.setGeoPoint(geoPt);
 		record.setMessage(message);
 		record.setTimeStamp(new Date(System.currentTimeMillis()));
 
 		ofy().save().entity(record).now();
+	}
+
+	@ApiMethod(name = "removepin")
+	public void removePin(@Named("title") String title) {
+		PinRecord record = findRecord(title);
+		if (record == null) {
+			log.info("Pin does not exist");
+			return;
+		}
+		ofy().delete().entity(record).now();
 	}
 
 	/**
@@ -65,5 +80,9 @@ public class PinEndpoint {
 	public CollectionResponse<PinRecord> listPins() {
 		List<PinRecord> records = ofy().load().type(PinRecord.class).list();
 		return CollectionResponse.<PinRecord>builder().setItems(records).build();
+	}
+
+	private PinRecord findRecord(String title) {
+		return ofy().load().type(PinRecord.class).filter("title", title).first().now();
 	}
 }
