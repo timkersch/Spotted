@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +41,6 @@ public class MainActivity extends ActionBarActivity {
 			} catch (InterruptedException e) {
 
 			}
-
-		} else {
-			//Toast.makeText(this, "Already registered with id " + sp.getString(Constants.PROPERTY_REG_ID, ""), Toast.LENGTH_LONG).show();
 		}
 
 		Intent intent = new Intent(this, MapActivity.class);

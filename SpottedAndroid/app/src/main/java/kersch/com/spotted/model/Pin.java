@@ -208,7 +208,6 @@ public class Pin {
 
 	// Updates this pins information to the database
 	private void updateDatabase() {
-
 	}
 
 	// Initalizes the pinService

@@ -1,8 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="android:Theme.Material">
+        <item name="android:actionBarStyle">@style/RedActionBar</item>
+    </style>
+
+    <style name="RedActionBar" parent="android:Widget.ActionBar">
+        <item name="android:background">#C40000</item>
     </style>
 
 </resources>
