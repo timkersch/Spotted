@@ -6,7 +6,6 @@ import android.os.*;
 import android.support.v4.app.FragmentActivity;
 
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -34,8 +33,8 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 	private Location currentLocation;
 	private LocationRequest locationRequest;
 
+	// TODO
 	private String lastUpdateTime;
-
 	// TODO
 	private boolean requestingLocationUpdates = true;
 
@@ -59,13 +58,6 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 		initTabs();
 		addMarkerListener();
 
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
 	}
 
 	@Override
@@ -170,7 +162,6 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		Log.d("Connection", " Established!");
 		if (requestingLocationUpdates) {
 			startLocationUpdates();
 		}
@@ -214,7 +205,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 
 	// Result in instance variable "pins"
 	private void loadMarkersFromDatabase() {
-		AsyncTask<Void, Void, List<Pin>> task = new AsyncTask<Void, Void, List<Pin>>() {
+		new AsyncTask<Void, Void, List<Pin>>() {
 			@Override
 			protected List<Pin> doInBackground(Void... params) {
 				List<Pin> pinList = null;
