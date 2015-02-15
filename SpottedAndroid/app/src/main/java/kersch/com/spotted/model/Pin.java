@@ -18,6 +18,7 @@ import kersch.com.spotted.utils.RandomPins;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -36,11 +37,13 @@ public class Pin {
 	private final String title;
 	private final String message;
 	private final long lifetimeInMilliseconds;
-	private int pinDrawableId;
+	//private final Date date;
+	private final int pinDrawableId;
 
 	// These can be updated after creation
 	private List<String> responses;
-	private int likes;
+	// Initial likes
+	private int likes = 0;
 
 	/** Create a new pin with a lat and longitude.
 	 * @param latitude
@@ -55,7 +58,8 @@ public class Pin {
 		this.title = title;
 		this.message = message;
 		this.lifetimeInMilliseconds = lifetimeInMilliseconds;
-		this.likes = 0;
+		this.pinDrawableId = RandomPins.getPinId();
+		//this.date = new Date(System.currentTimeMillis());
 
 		addToDatabase();
 	}
@@ -73,11 +77,9 @@ public class Pin {
 	 * @param pinRecord the pinrecord from the database
 	 */
 	public Pin(PinRecord pinRecord) {
-		this.title = pinRecord.getTitle();
-		this.message = pinRecord.getMessage();
-		this.geoPt = pinRecord.getGeoPoint();
+		this(pinRecord.getGeoPoint(), pinRecord.getTitle(), pinRecord.getMessage(), pinRecord.getLifeLengthInMilliseconds());
 		this.likes = pinRecord.getLikes();
-		this.lifetimeInMilliseconds = pinRecord.getLifeLengthInMilliseconds();
+		// TODO add date in backend
 	}
 
 	/** Method that return the immutable GeoPt of the pin.
@@ -131,7 +133,6 @@ public class Pin {
 		opt.position(toLatLng());
 		opt.title(title);
 		opt.snippet(message);
-		pinDrawableId = RandomPins.getPinId();
 		opt.icon(BitmapDescriptorFactory.fromResource(pinDrawableId));
 		return opt;
 	}

@@ -1,20 +1,18 @@
 package kersch.com.spotted.fragments;
 
 import android.app.Activity;
-import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.*;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import kersch.com.spotted.R;
 
 import kersch.com.spotted.fragments.dummy.DummyContent;
+import kersch.com.spotted.model.Pin;
+import kersch.com.spotted.model.PinListViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -33,6 +31,7 @@ public class PinFragment extends ListFragment {
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
+	private List<Pin> list = new ArrayList<>();
 
 	private OnFragmentInteractionListener mListener;
 
@@ -62,11 +61,13 @@ public class PinFragment extends ListFragment {
 			mParam2 = getArguments().getString(ARG_PARAM2);
 		}
 
+		list.add(new Pin(10, 20, "aaa", "mess", 100));
+
 
 
 		// TODO: Change Adapter to display your content
-		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-				R.layout.fragment_list_item, R.id.title, DummyContent.ITEMS));
+		setListAdapter(new PinListViewAdapter(getActivity(),
+				R.layout.fragment_list_item, list));
 	}
 
 
