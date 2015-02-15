@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +58,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 		initFabButton();
 		initTabs();
 		addMarkerListener();
+
 
 	}
 
