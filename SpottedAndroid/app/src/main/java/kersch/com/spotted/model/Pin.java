@@ -1,6 +1,7 @@
 package kersch.com.spotted.model;
 
 import android.os.AsyncTask;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -11,7 +12,9 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import kersch.com.backend.pinService.PinService;
 import kersch.com.backend.pinService.model.GeoPt;
 import kersch.com.backend.pinService.model.PinRecord;
+import kersch.com.spotted.R;
 import kersch.com.spotted.utils.Constants;
+import kersch.com.spotted.utils.RandomPins;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class Pin {
 	private final String title;
 	private final String message;
 	private final long lifetimeInMilliseconds;
+	private int pinDrawableId;
 
 	// These can be updated after creation
 	private List<String> responses;
@@ -127,7 +131,16 @@ public class Pin {
 		opt.position(toLatLng());
 		opt.title(title);
 		opt.snippet(message);
+		pinDrawableId = RandomPins.getPinId();
+		opt.icon(BitmapDescriptorFactory.fromResource(pinDrawableId));
 		return opt;
+	}
+
+	/** Returns the pin drawable id for this pin.
+	 * @return
+	 */
+	public int getPinDrawableId() {
+		return pinDrawableId;
 	}
 
 

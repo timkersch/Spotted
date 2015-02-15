@@ -1,12 +1,17 @@
 package kersch.com.spotted.fragments;
 
 import android.app.Activity;
+import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.*;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import kersch.com.spotted.R;
 
 import kersch.com.spotted.fragments.dummy.DummyContent;
@@ -56,6 +61,8 @@ public class PinFragment extends ListFragment {
 			mParam1 = getArguments().getString(ARG_PARAM1);
 			mParam2 = getArguments().getString(ARG_PARAM2);
 		}
+
+
 
 		// TODO: Change Adapter to display your content
 		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),

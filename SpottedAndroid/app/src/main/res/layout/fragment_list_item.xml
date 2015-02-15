@@ -4,19 +4,21 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent" android:columnCount="4">
 
-    <ImageView
+    <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/pin_icon" android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" android:src="@android:drawable/ic_dialog_map"
-            android:layout_margin="10dp"/>
+            android:layout_alignParentStart="true" android:src="@drawable/bluemarker_large"
+            android:layout_marginTop="10dp" android:layout_marginLeft="10dp" android:padding="10dp"
+            android:background="@android:color/transparent"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="This is a title"
             android:id="@+id/title" android:layout_alignParentTop="true" android:layout_toRightOf="@+id/pin_icon"
-            android:layout_toEndOf="@+id/pin_icon" android:layout_marginStart="10dp" android:layout_margin="10dp"/>
+            android:layout_toEndOf="@+id/pin_icon" android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp" android:layout_marginBottom="7dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,26 +26,29 @@
             android:text="18:35 | 2014-05-12"
             android:id="@+id/date" android:layout_alignParentTop="true" android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" android:paddingEnd="10dp" android:layout_marginLeft="10dp"
-            android:layout_marginTop="16dp" android:layout_marginBottom="16dp"/>
+            android:layout_marginTop="21dp" android:layout_marginBottom="14dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="This is a very long text to see how this label will wrap"
-            android:id="@+id/message" android:layout_below="@+id/title" android:layout_alignLeft="@+id/title"
-            android:layout_alignStart="@+id/title" android:layout_marginBottom="10dp"/>
+            android:id="@+id/message"
+            android:layout_below="@+id/pin_icon" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" android:paddingLeft="12dp" android:paddingRight="10dp"
+            android:layout_marginBottom="14dp" android:layout_marginTop="14dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Distance: 100m"
-            android:id="@+id/distance" android:layout_below="@+id/message" android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" android:layout_marginStart="10dp" android:layout_marginBottom="10dp"/>
+            android:id="@+id/distance"
+            android:layout_below="@+id/title" android:layout_alignLeft="@+id/title"
+            android:layout_alignStart="@+id/title"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" android:weightSum="1" android:layout_below="@+id/distance"
+            android:layout_centerHorizontal="true" android:weightSum="1" android:layout_below="@+id/message"
             android:paddingBottom="0dp" android:id="@+id/linearLayout">
         <Button
                 android:layout_width="wrap_content"
@@ -64,8 +69,9 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Expires in: 5h"
-            android:id="@+id/expire_time" android:layout_below="@+id/message" android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" android:paddingEnd="10dp"/>
+            android:id="@+id/expire_time"
+            android:paddingEnd="10dp" android:layout_below="@+id/date" android:layout_alignLeft="@+id/date"
+            android:layout_alignStart="@+id/date"/>
 
     <LinearLayout
             android:orientation="horizontal"
