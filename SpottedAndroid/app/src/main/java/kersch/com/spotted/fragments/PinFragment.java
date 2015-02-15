@@ -58,7 +58,7 @@ public class PinFragment extends ListFragment {
 
 		// TODO: Change Adapter to display your content
 		setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-				android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+				R.layout.fragment_list_item, R.id.title, DummyContent.ITEMS));
 	}
 
 
