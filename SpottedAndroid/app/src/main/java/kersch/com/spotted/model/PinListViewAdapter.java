@@ -46,7 +46,7 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 		LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
 		if (convertView == null) {
-			convertView = mInflater.inflate(R.layout.fragment_list_item, null);
+			convertView = mInflater.inflate(R.layout.fragment_list_item, parent, false);
 			holder = new ViewHolder();
 			holder.title = (TextView) convertView.findViewById(R.id.title);
 			holder.marker = (ImageButton) convertView.findViewById(R.id.pin_icon);

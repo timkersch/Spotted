@@ -43,7 +43,6 @@ public class MapActivity extends FragmentActivity implements
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
-	private PinListFragment pinListFragment;
 
 	// TODO
 	private String lastUpdateTime;
@@ -112,8 +111,6 @@ public class MapActivity extends FragmentActivity implements
 		View.OnClickListener addListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO what to be added
-				//addMarkerToMap("This is a marker", "Hello this is a message", 100);
 				FragmentManager fm = getFragmentManager();
 				FragmentTransaction ft = fm.beginTransaction();
 
@@ -138,9 +135,8 @@ public class MapActivity extends FragmentActivity implements
 				} else {
 					FragmentManager fm = getFragmentManager();
 					FragmentTransaction ft = fm.beginTransaction();
-
-					ListFragment fragment = new ListFragment();
-					ft.add(R.id.list_frame, fragment);
+					PinListFragment fragment = new PinListFragment();
+					ft.replace(R.id.list_frame, fragment);
 					ft.commit();
 				}
 			}
@@ -278,5 +274,9 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onFragmentInteraction(Uri uri) {
 		// TODO
+	}
+
+	public List<Pin> getPinList() {
+		return new ArrayList<>(pinMarkerMap.values());
 	}
 }

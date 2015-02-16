@@ -1,8 +1,10 @@
 package kersch.com.spotted.fragments;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +24,8 @@ public class PinListFragment extends ListFragment {
 
 	private static final String ARG_PARAM = "PINLIST";
 
-	private List<Pin> list;
-
 	private OnFragmentInteractionListener mListener;
+	private List<Pin> pinList;
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,15 +45,16 @@ public class PinListFragment extends ListFragment {
 		super.onCreate(savedInstanceState);
 	}
 
-	@Override
+/*	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_list_item, container, false);
-	}
+	}*/
 
 	@Override
 	public void onActivityCreated(Bundle bundle) {
-		setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, list));
+		super.onActivityCreated(bundle);
+		updateList();
 	}
 
 	@Override
@@ -72,6 +74,20 @@ public class PinListFragment extends ListFragment {
 		mListener = null;
 	}
 
+	private void updateList() {
+		pinList = ((MapActivity)getActivity()).getPinList();
+		setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, pinList));
+	}
+
+	public boolean updateList(List<Pin> pinList) {
+		boolean fragmentCreated = false;
+		if(getActivity() != null) {
+			this.pinList = pinList;
+			setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, pinList));
+			fragmentCreated = true;
+		}
+		return fragmentCreated;
+	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
