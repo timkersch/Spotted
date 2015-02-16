@@ -45,7 +45,6 @@ public class Pin implements Serializable {
 
 	// These can be updated after creation
 	private List<String> responses;
-	// Initial likes
 	private int likes;
 
 	/** Create a new pin with a lat and longitude.

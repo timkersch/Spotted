@@ -2,7 +2,6 @@ package kersch.com.spotted.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
@@ -64,10 +63,9 @@ public class MapActivity extends FragmentActivity implements
 		}
 
 		loadMarkersFromDatabase();
-
 		initFabButton();
 		initTabs();
-		addMarkerListener();
+		initMarkerListener();
 	}
 
 	@Override
@@ -83,10 +81,23 @@ public class MapActivity extends FragmentActivity implements
 		}
 	}
 
-	/**
-	 * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-	 * installed) and the map has not already been instantiated.
+	/** Add a marker to the map
+	 * @param title the title of the marker
+	 * @param message the message of the marker
+	 * @param lifetimeInMilliseconds the time tha marker is supposed to live
 	 */
+	public void addMarkerToMap(String title, String message, long lifetimeInMilliseconds) {
+		addMarkerToMap(title, message, lifetimeInMilliseconds, currentLocation);
+	}
+
+	/** Returns a list of pins added to the map.
+	 * @return
+	 */
+	public List<Pin> getPinList() {
+		return new ArrayList<>(pinMarkerMap.values());
+	}
+
+	// Setup map
 	private void setUpMapIfNeeded() throws InterruptedException {
 		// Do a null check to confirm that we have not already instantiated the map.
 		if (map == null) {
@@ -104,6 +115,7 @@ public class MapActivity extends FragmentActivity implements
 		}
 	}
 
+	// Initialize the fab button
 	private void initFabButton() {
 		FloatingActionButton addMarkerButton = (FloatingActionButton)findViewById(R.id.add_marker);
 		addMarkerButton.setColorNormal(Color.parseColor("#C40000"));
@@ -123,6 +135,7 @@ public class MapActivity extends FragmentActivity implements
 		addMarkerButton.setOnClickListener(addListener);
 	}
 
+	// Initialize tabs
 	private void initTabs() {
 		TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
 		tabHost.setup();
@@ -153,7 +166,8 @@ public class MapActivity extends FragmentActivity implements
 		tabHost.addTab(ts);
 	}
 
-	private void addMarkerListener() {
+	// Initialize a marker listener
+	private void initMarkerListener() {
 		map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker marker) {
@@ -163,6 +177,7 @@ public class MapActivity extends FragmentActivity implements
 		});
 	}
 
+	// Build the google api bclient
 	protected synchronized void buildGoogleApiClient() {
 		googleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
@@ -174,13 +189,24 @@ public class MapActivity extends FragmentActivity implements
 		}
 	}
 
-	public void addMarkerToMap(String title, String message, long lifetimeInMilliseconds) {
-		addMarkerToMap(title, message, lifetimeInMilliseconds, currentLocation);
-	}
-
+	// Private method that adds a marker with a custom location
 	private void addMarkerToMap(String title, String message, long lifetimeInMilliseconds, Location location) {
 		Pin pin = new Pin((float)location.getLatitude(), (float)location.getLongitude(), title, message, lifetimeInMilliseconds);
 		addMarker(pin);
+	}
+
+	// This places the marker in the map
+	private void addMarker(Pin pin) {
+		pinMarkerMap.put(map.addMarker(pin.getMarkerOptions()), pin);
+	}
+
+	// Remove a marker from map, list and db
+	private void removeMarker(Marker marker) {
+		if(pinMarkerMap.containsKey(marker)) {
+			marker.remove();
+			pinMarkerMap.get(marker).removePin();
+			pinMarkerMap.remove(marker);
+		}
 	}
 
 	protected void createLocationRequest() {
@@ -215,25 +241,13 @@ public class MapActivity extends FragmentActivity implements
 		LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
 	}
 
-	private void addMarker(Pin pin) {
-		pinMarkerMap.put(map.addMarker(pin.getMarkerOptions()), pin);
-	}
-
 	@Override
 	public void onLocationChanged(Location location) {
 		currentLocation = location;
 		lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
 	}
 
-	private void removeMarker(Marker marker) {
-		if(pinMarkerMap.containsKey(marker)) {
-			marker.remove();
-			pinMarkerMap.get(marker).removePin();
-			pinMarkerMap.remove(marker);
-		}
-	}
-
-	// Result in instance variable "pins"
+	// Result in map "pins"
 	private void loadMarkersFromDatabase() {
 		new AsyncTask<Void, Void, List<Pin>>() {
 			@Override
@@ -274,9 +288,5 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onFragmentInteraction(Uri uri) {
 		// TODO
-	}
-
-	public List<Pin> getPinList() {
-		return new ArrayList<>(pinMarkerMap.values());
 	}
 }

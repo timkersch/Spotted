@@ -24,33 +24,18 @@ import kersch.com.spotted.activities.MapActivity;
  * create an instance of this fragment.
  */
 public class AddFragment extends Fragment implements View.OnClickListener {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
-
-	private OnFragmentInteractionListener mListener;
+	private OnFragmentInteractionListener fragmentInteractionListener;
 
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
-	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
 	 * @return A new instance of fragment AddFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
-	public static AddFragment newInstance(String param1, String param2) {
+	public static AddFragment newInstance() {
 		AddFragment fragment = new AddFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
 		return fragment;
+
 	}
 
 	public AddFragment() {
@@ -60,10 +45,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-		}
 	}
 
 	@Override
@@ -72,7 +53,9 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
 		// Initialize spinner
 		Spinner spinner = (Spinner) getView().findViewById(R.id.lifetime_spinner);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.lifetime_array, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+				R.array.lifetime_array,
+				android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 	}
@@ -81,35 +64,14 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_add, container, false);
+
+		// Get Buttons and set listeners
 		Button commit = (Button)view.findViewById(R.id.commit_pin);
 		Button cancel = (Button)view.findViewById(R.id.cancel_pin);
 		commit.setOnClickListener(this);
 		cancel.setOnClickListener(this);
+
 		return view;
-	}
-
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
-		}
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			mListener = (OnFragmentInteractionListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnFragmentInteractionListener");
-		}
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mListener = null;
 	}
 
 	@Override
@@ -126,6 +88,22 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		}
 	}
 
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			fragmentInteractionListener = (OnFragmentInteractionListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		fragmentInteractionListener = null;
+	}
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
@@ -139,6 +117,13 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
+	}
+
+	// TODO: Rename method, update argument and hook method into UI event
+	public void onButtonPressed(Uri uri) {
+		if (fragmentInteractionListener != null) {
+			fragmentInteractionListener.onFragmentInteraction(uri);
+		}
 	}
 
 }
