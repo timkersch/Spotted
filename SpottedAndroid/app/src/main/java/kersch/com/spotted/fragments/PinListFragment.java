@@ -3,22 +3,22 @@ package kersch.com.spotted.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.ListFragment;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
-import kersch.com.spotted.R;
 
+import kersch.com.spotted.R;
 import kersch.com.spotted.activities.MapActivity;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.model.PinListViewAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A fragment representing a list of Pins.
  */
-public class PinFragment extends ListFragment {
+public class PinListFragment extends ListFragment {
 
 	private static final String ARG_PARAM = "PINLIST";
 
@@ -30,11 +30,11 @@ public class PinFragment extends ListFragment {
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public PinFragment() {
+	public PinListFragment() {
 	}
 
-	public static PinFragment newInstance(List<Pin> pinList) {
-		PinFragment fragment = new PinFragment();
+	public static PinListFragment newInstance(List<Pin> pinList) {
+		PinListFragment fragment = new PinListFragment();
 		// TODO
 		return fragment;
 	}
@@ -42,8 +42,17 @@ public class PinFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// TODO
-		//setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, MapActivity.getPinList()));
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		return inflater.inflate(R.layout.fragment_list_item, container, false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle bundle) {
+		setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, list));
 	}
 
 	@Override

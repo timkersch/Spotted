@@ -1,16 +1,16 @@
 package kersch.com.spotted.activities;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.*;
 import android.support.v4.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -23,20 +23,27 @@ import com.google.android.gms.maps.model.*;
 import kersch.com.backend.pinService.model.CollectionResponsePinRecord;
 import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.spotted.R;
-import kersch.com.spotted.fragments.PinFragment;
+import kersch.com.spotted.fragments.AddFragment;
+import kersch.com.spotted.fragments.PinListFragment;
 import kersch.com.spotted.model.Pin;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.*;
 
-public class MapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, PinFragment.OnFragmentInteractionListener {
+public class MapActivity extends FragmentActivity implements
+		GoogleApiClient.ConnectionCallbacks,
+		GoogleApiClient.OnConnectionFailedListener,
+		com.google.android.gms.location.LocationListener,
+		PinListFragment.OnFragmentInteractionListener,
+		AddFragment.OnFragmentInteractionListener {
+
 	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
 	private GoogleMap map;
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
-	private PinFragment pinFragment;
+	private PinListFragment pinListFragment;
 
 	// TODO
 	private String lastUpdateTime;
@@ -106,7 +113,14 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 			@Override
 			public void onClick(View v) {
 				// TODO what to be added
-				addMarkerToMap("This is a marker", "Hello this is a message", 100);
+				//addMarkerToMap("This is a marker", "Hello this is a message", 100);
+				FragmentManager fm = getFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+
+				AddFragment fragment = new AddFragment();
+				ft.add(R.id.fragment_container, fragment);
+				ft.addToBackStack("addFragment");
+				ft.commit();
 			}
 		};
 		addMarkerButton.setOnClickListener(addListener);
@@ -122,7 +136,12 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 				if(tabId.equals("map")) {
 					// TODO
 				} else {
-					// TODO
+					FragmentManager fm = getFragmentManager();
+					FragmentTransaction ft = fm.beginTransaction();
+
+					ListFragment fragment = new ListFragment();
+					ft.add(R.id.list_frame, fragment);
+					ft.commit();
 				}
 			}
 		});
@@ -159,7 +178,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 		}
 	}
 
-	private void addMarkerToMap(String title, String message, long lifetimeInMilliseconds) {
+	public void addMarkerToMap(String title, String message, long lifetimeInMilliseconds) {
 		addMarkerToMap(title, message, lifetimeInMilliseconds, currentLocation);
 	}
 
@@ -253,6 +272,11 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 
 	@Override
 	public void onFragmentInteraction(String id) {
+		// TODO
+	}
+
+	@Override
+	public void onFragmentInteraction(Uri uri) {
 		// TODO
 	}
 }

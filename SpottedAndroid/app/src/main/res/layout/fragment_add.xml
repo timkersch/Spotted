@@ -1,0 +1,76 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="kersch.com.spotted.fragments.AddFragment"
+             android:background="#ff313131">
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pin_image" android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" android:layout_margin="15dp"
+                android:src="@drawable/redmarker_large" android:clickable="false"
+                android:background="@android:color/transparent" android:padding="6dp"/>
+
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="Add a title"
+                android:ems="10"
+                android:id="@+id/enter_title"
+                android:padding="10dp"
+                android:layout_alignTop="@+id/pin_image" android:layout_toRightOf="@+id/pin_image"
+                android:layout_alignParentRight="true" android:layout_alignParentEnd="true"
+                android:layout_marginRight="15dp" android:layout_marginTop="12dp"/>
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/enter_message"
+                android:hint="What do you see?"
+                android:layout_below="@+id/pin_image"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" android:padding="10dp" android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp" android:layout_marginBottom="15dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Pin lifetime:"
+                android:id="@+id/lifetime_label" android:layout_below="@+id/enter_message"
+                android:layout_alignParentLeft="true" android:layout_alignParentStart="true"
+                android:paddingLeft="22dp" android:paddingTop="15dp"
+                android:paddingBottom="15dp"/>
+        <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lifetime_spinner" android:layout_below="@+id/enter_message"
+                android:layout_toRightOf="@+id/lifetime_label" android:layout_toEndOf="@+id/lifetime_label"
+                android:layout_margin="15dp"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" android:paddingRight="15dp" android:paddingLeft="15dp"
+                android:layout_below="@+id/lifetime_spinner" android:layout_marginTop="8dp">
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel"
+                    android:id="@+id/cancel_pin" android:layout_weight="0.5" android:layout_gravity="left"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Commit"
+                    android:id="@+id/commit_pin" android:layout_weight="0.5" android:layout_gravity="right"
+                    />
+        </LinearLayout>
+
+    </RelativeLayout>
+</FrameLayout>
