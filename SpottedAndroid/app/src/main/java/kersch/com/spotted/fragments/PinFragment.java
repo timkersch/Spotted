@@ -3,11 +3,12 @@ package kersch.com.spotted.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import kersch.com.spotted.R;
 
-import kersch.com.spotted.fragments.dummy.DummyContent;
+import kersch.com.spotted.activities.MapActivity;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.model.PinListViewAdapter;
 
@@ -15,35 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
- * interface.
+ * A fragment representing a list of Pins.
  */
 public class PinFragment extends ListFragment {
 
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
+	private static final String ARG_PARAM = "PINLIST";
 
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
-	private List<Pin> list = new ArrayList<>();
+	private List<Pin> list;
 
 	private OnFragmentInteractionListener mListener;
-
-	// TODO: Rename and change types of parameters
-	public static PinFragment newInstance(String param1, String param2) {
-		PinFragment fragment = new PinFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
-		return fragment;
-	}
 
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,24 +33,18 @@ public class PinFragment extends ListFragment {
 	public PinFragment() {
 	}
 
+	public static PinFragment newInstance(List<Pin> pinList) {
+		PinFragment fragment = new PinFragment();
+		// TODO
+		return fragment;
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-		}
-
-		list.add(new Pin(10, 20, "aaa", "mess", 100));
-
-
-
-		// TODO: Change Adapter to display your content
-		setListAdapter(new PinListViewAdapter(getActivity(),
-				R.layout.fragment_list_item, list));
+		// TODO
+		//setListAdapter(new PinListViewAdapter(getActivity(), R.layout.fragment_list_item, MapActivity.getPinList()));
 	}
-
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -96,7 +71,8 @@ public class PinFragment extends ListFragment {
 		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+			//TODO
+			//mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
 		}
 	}
 

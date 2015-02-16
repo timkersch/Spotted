@@ -1,5 +1,8 @@
 package kersch.com.spotted.activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.*;
@@ -28,11 +31,12 @@ import java.text.DateFormat;
 import java.util.*;
 
 public class MapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, PinFragment.OnFragmentInteractionListener {
+	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
 	private GoogleMap map;
-	private Map<Marker, Pin> pinMarkerMap = new HashMap<>();
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
+	private PinFragment pinFragment;
 
 	// TODO
 	private String lastUpdateTime;
@@ -52,14 +56,12 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		// Load markers from database
+
 		loadMarkersFromDatabase();
 
 		initFabButton();
 		initTabs();
 		addMarkerListener();
-
-
 	}
 
 	@Override
@@ -87,7 +89,7 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 					.getMap();
 			map.getUiSettings().setMapToolbarEnabled(false);
 			map.getUiSettings().setMyLocationButtonEnabled(true);
-			map.getUiSettings().setCompassEnabled(false);
+			map.getUiSettings().setCompassEnabled(true);
 			map.setMyLocationEnabled(true);
 			// Check if we were successful in obtaining the map.
 			if (map != null) {
@@ -113,6 +115,17 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 	private void initTabs() {
 		TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
 		tabHost.setup();
+
+		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+			@Override
+			public void onTabChanged(String tabId) {
+				if(tabId.equals("map")) {
+					// TODO
+				} else {
+					// TODO
+				}
+			}
+		});
 
 		TabHost.TabSpec ts = tabHost.newTabSpec("map");
 		ts.setContent(R.id.map_tab);
@@ -240,6 +253,6 @@ public class MapActivity extends FragmentActivity implements GoogleApiClient.Con
 
 	@Override
 	public void onFragmentInteraction(String id) {
-
+		// TODO
 	}
 }

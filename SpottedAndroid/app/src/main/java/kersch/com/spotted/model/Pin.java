@@ -1,6 +1,8 @@
 package kersch.com.spotted.model;
 
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -9,6 +11,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.api.client.util.DateTime;
 import kersch.com.backend.pinService.PinService;
 import kersch.com.backend.pinService.model.GeoPt;
 import kersch.com.backend.pinService.model.PinRecord;
@@ -17,6 +20,7 @@ import kersch.com.spotted.utils.Constants;
 import kersch.com.spotted.utils.RandomPins;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,22 +32,21 @@ import java.util.concurrent.Semaphore;
  * Date: 15-01-31
  * Time: 23:34
  */
-public class Pin {
+public class Pin implements Serializable {
 	private static PinService pinService;
-	private static final Semaphore semaphore = new Semaphore(1, true);
 
 	// These Pin attributes are fix.
 	private final GeoPt geoPt;
 	private final String title;
 	private final String message;
 	private final long lifetimeInMilliseconds;
-	//private final Date date;
+	private final DateTime date;
 	private final int pinDrawableId;
 
 	// These can be updated after creation
 	private List<String> responses;
 	// Initial likes
-	private int likes = 0;
+	private int likes;
 
 	/** Create a new pin with a lat and longitude.
 	 * @param latitude
@@ -59,7 +62,8 @@ public class Pin {
 		this.message = message;
 		this.lifetimeInMilliseconds = lifetimeInMilliseconds;
 		this.pinDrawableId = RandomPins.getPinId();
-		//this.date = new Date(System.currentTimeMillis());
+		this.date = new DateTime(System.currentTimeMillis());
+		this.likes = 0;
 
 		addToDatabase();
 	}
@@ -77,9 +81,13 @@ public class Pin {
 	 * @param pinRecord the pinrecord from the database
 	 */
 	public Pin(PinRecord pinRecord) {
-		this(pinRecord.getGeoPoint(), pinRecord.getTitle(), pinRecord.getMessage(), pinRecord.getLifeLengthInMilliseconds());
+		this.geoPt = pinRecord.getGeoPoint();
+		this.title = pinRecord.getTitle();
+		this.message = pinRecord.getMessage();
+		this.lifetimeInMilliseconds = pinRecord.getLifeLengthInMilliseconds();
 		this.likes = pinRecord.getLikes();
-		// TODO add date in backend
+		this.date = pinRecord.getTimeStamp();
+		this.pinDrawableId = RandomPins.getPinId();
 	}
 
 	/** Method that return the immutable GeoPt of the pin.
@@ -144,11 +152,15 @@ public class Pin {
 		return pinDrawableId;
 	}
 
-
 	/** This method removes a pin from the database.
 	 */
 	public void removePin() {
 		removeFromDatabase();
+	}
+
+	// Updates this pins information to the database
+	private void updateDatabase() {
+		// TODO
 	}
 
 	/** Method that returns the pinService backend object.
@@ -168,22 +180,9 @@ public class Pin {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
-				try {
-					semaphore.acquire();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				initPinService();
-				semaphore.release();
 				try {
-					try {
-						semaphore.acquire();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					pinService.registerpin(title, message, lifetimeInMilliseconds, geoPt).execute();
-					semaphore.release();
-
+					pinService.registerpin(title, message, lifetimeInMilliseconds, date, geoPt).execute();
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -196,22 +195,9 @@ public class Pin {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
-				try {
-					semaphore.acquire();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				initPinService();
-				semaphore.release();
 				try {
-					try {
-						semaphore.acquire();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
 					pinService.removepin(title).execute();
-					semaphore.release();
-
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -220,12 +206,8 @@ public class Pin {
 		}.execute();
 	}
 
-	// Updates this pins information to the database
-	private void updateDatabase() {
-	}
-
 	// Initalizes the pinService
-	public static void initPinService() {
+	public static synchronized void initPinService() {
 		if (pinService == null) {
 			PinService.Builder builder;
 

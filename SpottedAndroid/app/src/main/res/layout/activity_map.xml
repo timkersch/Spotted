@@ -39,23 +39,27 @@
                               android:name="com.google.android.gms.maps.SupportMapFragment"
                               android:layout_gravity="center_horizontal|bottom"/>
 
-                    <com.getbase.floatingactionbutton.AddFloatingActionButton
-                            android:id="@+id/add_marker"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp" android:layout_gravity="bottom|end"
-                            android:layout_marginRight="12dp"/>
+
                 </FrameLayout>
                 <LinearLayout
                         android:id="@+id/list_tab"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:orientation="vertical">
-                    <fragment android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:name="kersch.com.spotted.fragments.PinFragment" android:id="@+id/fragment"/>
+                    <fragment android:layout_width="match_parent"
+                              android:layout_height="fill_parent"
+                              android:name="kersch.com.spotted.fragments.PinFragment" android:id="@+id/fragment">
+
+                    </fragment>
+
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>
+    <com.getbase.floatingactionbutton.AddFloatingActionButton
+            android:id="@+id/add_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" android:layout_gravity="bottom|end"
+            android:layout_marginRight="12dp"/>
 </FrameLayout>

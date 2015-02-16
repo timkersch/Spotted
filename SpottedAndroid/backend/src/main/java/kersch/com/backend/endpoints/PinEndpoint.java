@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
 import kersch.com.backend.records.PinRecord;
 import kersch.com.backend.records.RegistrationRecord;
 
@@ -31,6 +32,7 @@ public class PinEndpoint {
 	public void registerPin(@Named("title") String title,
 	                        @Named("message") String message,
 	                        @Named("lifetime") long lifetime,
+	                        @Named("date") Date date,
 	                        GeoPt geoPt) {
 
 		PinRecord record = new PinRecord();
@@ -38,7 +40,7 @@ public class PinEndpoint {
 		record.setLifeLengthInMilliseconds(lifetime);
 		record.setGeoPoint(geoPt);
 		record.setMessage(message);
-		record.setTimeStamp(new Date(System.currentTimeMillis()));
+		record.setTimeStamp(date);
 
 		ofy().save().entity(record).now();
 	}
@@ -83,6 +85,7 @@ public class PinEndpoint {
 	}
 
 	private PinRecord findRecord(String title) {
+		// TODO do not find pins based on title
 		return ofy().load().type(PinRecord.class).filter("title", title).first().now();
 	}
 }

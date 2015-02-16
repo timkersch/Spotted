@@ -1,6 +1,7 @@
 package kersch.com.backend.records;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
