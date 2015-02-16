@@ -2,6 +2,8 @@ package kersch.com.spotted.activities;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
@@ -9,6 +11,8 @@ import android.os.*;
 import android.support.v4.app.FragmentActivity;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -24,11 +28,16 @@ import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.spotted.R;
 import kersch.com.spotted.fragments.AddFragment;
 import kersch.com.spotted.fragments.PinListFragment;
+import kersch.com.spotted.gcmServices.GcmRegistration;
 import kersch.com.spotted.model.Pin;
+import kersch.com.spotted.utils.Constants;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MapActivity extends FragmentActivity implements
 		GoogleApiClient.ConnectionCallbacks,
@@ -53,6 +62,22 @@ public class MapActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
+		SharedPreferences sp = getSharedPreferences(MapActivity.class.getSimpleName(), Context.MODE_PRIVATE);
+
+		if(getRegistrationId(sp).isEmpty()) {
+			// Start Async task to Register device
+			AsyncTask<Void, Void, String> task = new GcmRegistration(this, sp);
+			try {
+				task.get(3000, TimeUnit.MILLISECONDS);
+			} catch (TimeoutException e) {
+
+			} catch (ExecutionException e) {
+
+			} catch (InterruptedException e) {
+
+			}
+		}
+
 		buildGoogleApiClient();
 		Pin.initPinService();
 
@@ -66,6 +91,27 @@ public class MapActivity extends FragmentActivity implements
 		initFabButton();
 		initTabs();
 		initMarkerListener();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+
+		//noinspection SimplifiableIfStatement
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -278,6 +324,16 @@ public class MapActivity extends FragmentActivity implements
 				}
 			}
 		}.execute();
+	}
+
+	private String getRegistrationId(SharedPreferences sp) {
+		final SharedPreferences prefs = sp;
+		String registrationId = prefs.getString(Constants.PROPERTY_REG_ID, "");
+
+		if (registrationId.isEmpty()) {
+			return "";
+		}
+		return registrationId;
 	}
 
 	@Override
