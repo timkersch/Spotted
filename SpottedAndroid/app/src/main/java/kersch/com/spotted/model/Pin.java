@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.api.client.util.DateTime;
 import kersch.com.backend.pinService.model.GeoPt;
 import kersch.com.backend.pinService.model.PinRecord;
+import kersch.com.spotted.appEngineServices.DbOperations;
 import kersch.com.spotted.utils.RandomPins;
 
 import java.io.IOException;

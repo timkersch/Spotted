@@ -26,8 +26,8 @@ import com.google.android.gms.maps.model.*;
 import kersch.com.spotted.R;
 import kersch.com.spotted.fragments.AddFragment;
 import kersch.com.spotted.fragments.PinListFragment;
-import kersch.com.spotted.gcmServices.GcmRegistration;
-import kersch.com.spotted.model.DbOperations;
+import kersch.com.spotted.appEngineServices.DbOperations;
+import kersch.com.spotted.utils.NotRegisteredForMessagesException;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
 
@@ -55,9 +55,9 @@ public class MapActivity extends FragmentActivity implements
 
 	private final Handler dbHandler = new Handler() {
 		@Override
-		public void handleMessage(Message m) {
-			if(m.what == Constants.DATABASE_UPDATE_ID) {
-				List<Pin> pinList = (List<Pin>) m.obj;
+		public void handleMessage(Message message) {
+			if(message.what == Constants.DATABASE_UPDATE_ID) {
+				List<Pin> pinList = (List<Pin>) message.obj;
 				updatePins(pinList);
 			}
 		}
@@ -72,7 +72,7 @@ public class MapActivity extends FragmentActivity implements
 
 		if(getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device
-			new GcmRegistration(this, sp).execute();
+			DbOperations.registerForGcm(this, sp);
 		}
 
 		buildGoogleApiClient();
@@ -83,7 +83,13 @@ public class MapActivity extends FragmentActivity implements
 			e.printStackTrace();
 		}
 
-		DbOperations.loadPinsFromDatabase(dbHandler);
+		DbOperations.registerForMessages(dbHandler);
+		try {
+			DbOperations.loadPinsFromDatabase();
+		} catch (NotRegisteredForMessagesException e) {
+			e.printStackTrace();
+		}
+
 		initFabButton();
 		initTabs();
 		initMarkerListener();
@@ -107,7 +113,11 @@ public class MapActivity extends FragmentActivity implements
 		if (id == R.id.action_settings) {
 			return true;
 		} else if(id == R.id.action_refresh) {
-			DbOperations.loadPinsFromDatabase(dbHandler);
+			try {
+				DbOperations.loadPinsFromDatabase();
+			} catch (NotRegisteredForMessagesException e) {
+
+			}
 		} else if(id == R.id.action_filter) {
 			// TODO
 		}
