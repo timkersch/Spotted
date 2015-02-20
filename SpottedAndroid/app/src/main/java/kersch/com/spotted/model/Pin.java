@@ -1,30 +1,18 @@
 package kersch.com.spotted.model;
 
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.api.client.util.DateTime;
-import kersch.com.backend.pinService.PinService;
 import kersch.com.backend.pinService.model.GeoPt;
 import kersch.com.backend.pinService.model.PinRecord;
-import kersch.com.spotted.R;
-import kersch.com.spotted.utils.Constants;
 import kersch.com.spotted.utils.RandomPins;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 /**
  * Created by: Tim Kerschbaumer
@@ -33,8 +21,6 @@ import java.util.concurrent.Semaphore;
  * Time: 23:34
  */
 public class Pin implements Serializable {
-	private static PinService pinService;
-
 	// These Pin attributes are fix.
 	private final GeoPt geoPt;
 	private final String title;
@@ -135,6 +121,11 @@ public class Pin implements Serializable {
 		// TODO update database
 	}
 
+	// Updates this pins information to the database
+	private void updateDatabase() {
+		// TODO
+	}
+
 	public MarkerOptions getMarkerOptions() {
 		MarkerOptions opt = new MarkerOptions();
 		opt.position(toLatLng());
@@ -151,24 +142,6 @@ public class Pin implements Serializable {
 		return pinDrawableId;
 	}
 
-	/** This method removes a pin from the database.
-	 */
-	public void removePin() {
-		removeFromDatabase();
-	}
-
-	// Updates this pins information to the database
-	private void updateDatabase() {
-		// TODO
-	}
-
-	/** Method that returns the pinService backend object.
-	 * @return
-	 */
-	public static PinService getPinService() {
-		return pinService;
-	}
-
 	// Convert GeoPt to LatLng
 	private LatLng toLatLng() {
 		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
@@ -179,9 +152,8 @@ public class Pin implements Serializable {
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
-				initPinService();
 				try {
-					pinService.registerpin(title, message, lifetimeInMilliseconds, date, geoPt).execute();
+					DbOperations.getPinService().registerpin(title, message, lifetimeInMilliseconds, date, geoPt).execute();
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -190,47 +162,17 @@ public class Pin implements Serializable {
 		}.execute();
 	}
 
-	private void removeFromDatabase() {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				initPinService();
-				try {
-					pinService.removepin(title).execute();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute();
-	}
-
-	// Initalizes the pinService
-	public static synchronized void initPinService() {
-		if (pinService == null) {
-			PinService.Builder builder;
-
-			if(Constants.LOCAL == true) {
-				// Code to run local
-				builder = new PinService.Builder(AndroidHttp.newCompatibleTransport(),
-						new AndroidJsonFactory(), null)
-						// Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
-						// otherwise they can be skipped
-						.setRootUrl("http://10.0.2.2:8080/_ah/api/")
-						.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-							@Override
-							public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)
-									throws IOException {
-								abstractGoogleClientRequest.setDisableGZipContent(true);
-							}
-						});
-			} else {
-				// Code to run on app engine
-				builder = new PinService.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-						.setRootUrl("https://black-alpha-838.appspot.com/_ah/api/");
-			}
-
-			pinService = builder.build();
+	@Override
+	public boolean equals(Object o) {
+		if(o == null) {
+			return false;
 		}
+		if(o.getClass() == Pin.class) {
+			Pin p = (Pin)o;
+			return p.geoPt.equals(this.geoPt);
+		}
+		return false;
 	}
+
+
 }

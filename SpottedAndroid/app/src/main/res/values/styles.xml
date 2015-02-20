@@ -2,11 +2,12 @@
 <resources>
 
     <style name="AppTheme" parent="android:Theme.Material">
-        <item name="android:actionBarStyle">@style/RedActionBar</item>
-    </style>
 
-    <style name="RedActionBar" parent="android:Widget.ActionBar">
-        <item name="android:background">#C40000</item>
+        <item name="android:colorPrimary">#C40000</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">#B10000</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">#FFFFFF</item>
     </style>
 
 </resources>

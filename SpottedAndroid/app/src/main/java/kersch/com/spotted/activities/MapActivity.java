@@ -23,21 +23,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
-import kersch.com.backend.pinService.model.CollectionResponsePinRecord;
-import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.spotted.R;
 import kersch.com.spotted.fragments.AddFragment;
 import kersch.com.spotted.fragments.PinListFragment;
 import kersch.com.spotted.gcmServices.GcmRegistration;
+import kersch.com.spotted.model.DbOperations;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class MapActivity extends FragmentActivity implements
 		GoogleApiClient.ConnectionCallbacks,
@@ -51,11 +46,22 @@ public class MapActivity extends FragmentActivity implements
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
+	private final FragmentManager fragmentManager = getFragmentManager();
 
 	// TODO
 	private String lastUpdateTime;
 	// TODO
 	private boolean requestingLocationUpdates = true;
+
+	private final Handler dbHandler = new Handler() {
+		@Override
+		public void handleMessage(Message m) {
+			if(m.what == Constants.DATABASE_UPDATE_ID) {
+				List<Pin> pinList = (List<Pin>) m.obj;
+				updatePins(pinList);
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,20 +72,10 @@ public class MapActivity extends FragmentActivity implements
 
 		if(getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device
-			AsyncTask<Void, Void, String> task = new GcmRegistration(this, sp);
-			try {
-				task.get(3000, TimeUnit.MILLISECONDS);
-			} catch (TimeoutException e) {
-
-			} catch (ExecutionException e) {
-
-			} catch (InterruptedException e) {
-
-			}
+			new GcmRegistration(this, sp).execute();
 		}
 
 		buildGoogleApiClient();
-		Pin.initPinService();
 
 		try {
 			setUpMapIfNeeded();
@@ -87,7 +83,7 @@ public class MapActivity extends FragmentActivity implements
 			e.printStackTrace();
 		}
 
-		loadMarkersFromDatabase();
+		DbOperations.loadPinsFromDatabase(dbHandler);
 		initFabButton();
 		initTabs();
 		initMarkerListener();
@@ -110,7 +106,12 @@ public class MapActivity extends FragmentActivity implements
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 			return true;
+		} else if(id == R.id.action_refresh) {
+			DbOperations.loadPinsFromDatabase(dbHandler);
+		} else if(id == R.id.action_filter) {
+			// TODO
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -124,6 +125,16 @@ public class MapActivity extends FragmentActivity implements
 		}
 		if (googleApiClient.isConnected() && !requestingLocationUpdates) {
 			startLocationUpdates();
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (fragmentManager.getBackStackEntryCount() >= 1){
+			fragmentManager.popBackStackImmediate();
+			fragmentManager.beginTransaction().commit();
+		} else {
+			super.onBackPressed();
 		}
 	}
 
@@ -148,8 +159,7 @@ public class MapActivity extends FragmentActivity implements
 		// Do a null check to confirm that we have not already instantiated the map.
 		if (map == null) {
 			// Try to obtain the map from the SupportMapFragment.
-			map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-					.getMap();
+			map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 			map.getUiSettings().setMapToolbarEnabled(false);
 			map.getUiSettings().setMyLocationButtonEnabled(true);
 			map.getUiSettings().setCompassEnabled(true);
@@ -169,9 +179,7 @@ public class MapActivity extends FragmentActivity implements
 		View.OnClickListener addListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				FragmentManager fm = getFragmentManager();
-				FragmentTransaction ft = fm.beginTransaction();
-
+				FragmentTransaction ft = fragmentManager.beginTransaction();
 				AddFragment fragment = new AddFragment();
 				ft.add(R.id.fragment_container, fragment);
 				ft.addToBackStack("addFragment");
@@ -192,8 +200,7 @@ public class MapActivity extends FragmentActivity implements
 				if(tabId.equals("map")) {
 					// TODO
 				} else {
-					FragmentManager fm = getFragmentManager();
-					FragmentTransaction ft = fm.beginTransaction();
+					FragmentTransaction ft = fragmentManager.beginTransaction();
 					PinListFragment fragment = new PinListFragment();
 					ft.replace(R.id.list_frame, fragment);
 					ft.commit();
@@ -235,24 +242,19 @@ public class MapActivity extends FragmentActivity implements
 		}
 	}
 
-	// Private method that adds a marker with a custom location
-	private void addMarkerToMap(String title, String message, long lifetimeInMilliseconds, Location location) {
-		Pin pin = new Pin((float)location.getLatitude(), (float)location.getLongitude(), title, message, lifetimeInMilliseconds);
-		addMarker(pin);
-	}
-
 	// This places the marker in the map
 	private void addMarker(Pin pin) {
 		pinMarkerMap.put(map.addMarker(pin.getMarkerOptions()), pin);
 	}
 
-	// Remove a marker from map, list and db
+	// Private method that adds a marker with a custom location - Used for testing only
+	private void addMarkerToMap(String title, String message, long lifetimeInMilliseconds, Location location) {
+		Pin pin = new Pin((float)location.getLatitude(), (float)location.getLongitude(), title, message, lifetimeInMilliseconds);
+		addMarker(pin);
+	}
+
 	private void removeMarker(Marker marker) {
-		if(pinMarkerMap.containsKey(marker)) {
-			marker.remove();
-			pinMarkerMap.get(marker).removePin();
-			pinMarkerMap.remove(marker);
-		}
+
 	}
 
 	protected void createLocationRequest() {
@@ -266,6 +268,17 @@ public class MapActivity extends FragmentActivity implements
 	public void onConnected(Bundle connectionHint) {
 		if (requestingLocationUpdates) {
 			startLocationUpdates();
+		}
+	}
+
+	public void updatePins(List<Pin> pinList) {
+		if (pinList != null) {
+			// TODO remove pins that are no longe on db
+			for (Pin pin : pinList) {
+				if(!pinMarkerMap.containsValue(pin)) {
+					addMarker(pin);
+				}
+			}
 		}
 	}
 
@@ -291,39 +304,6 @@ public class MapActivity extends FragmentActivity implements
 	public void onLocationChanged(Location location) {
 		currentLocation = location;
 		lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-	}
-
-	// Result in map "pins"
-	private void loadMarkersFromDatabase() {
-		new AsyncTask<Void, Void, List<Pin>>() {
-			@Override
-			protected List<Pin> doInBackground(Void... params) {
-				List<Pin> pinList = null;
-				try {
-					CollectionResponsePinRecord cp = Pin.getPinService().listPins().execute();
-					List<PinRecord> pr = cp.getItems();
-					if (pr != null) {
-						pinList = new ArrayList<>(pr.size());
-						for (int i = 0; i < pr.size(); i++) {
-							pinList.add(new Pin(pr.get(i)));
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return pinList;
-			}
-
-			@Override
-			protected void onPostExecute(List<Pin> pinList) {
-				// Add pins to map
-				if (pinList != null) {
-					for (Pin pin : pinList) {
-						addMarker(pin);
-					}
-				}
-			}
-		}.execute();
 	}
 
 	private String getRegistrationId(SharedPreferences sp) {

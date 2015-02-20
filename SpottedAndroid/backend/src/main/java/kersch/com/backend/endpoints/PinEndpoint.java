@@ -11,6 +11,7 @@ import kersch.com.backend.records.RegistrationRecord;
 
 import javax.inject.Named;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,8 +42,13 @@ public class PinEndpoint {
 		record.setGeoPoint(geoPt);
 		record.setMessage(message);
 		record.setTimeStamp(date);
-
 		ofy().save().entity(record).now();
+		try {
+			//TODO
+			new MessagingEndpoint().sendMessage("Records updated");
+		} catch (IOException e) {
+			// TODO
+		}
 	}
 
 	@ApiMethod(name = "removepin")

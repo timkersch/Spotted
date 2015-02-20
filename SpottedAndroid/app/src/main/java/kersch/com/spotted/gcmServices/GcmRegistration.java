@@ -56,9 +56,7 @@ public class GcmRegistration extends AsyncTask<Void, Void, String> {
 
 	@Override
 	protected void onPostExecute(String regId) {
-		Toast.makeText(context, "Device registered with id: " + regId, Toast.LENGTH_LONG).show();
 		storeRegistrationId(regId);
-		Logger.getLogger("REGISTRATION").log(Level.INFO, regId);
 	}
 
 	// Store registration id in sharedPreferences.
