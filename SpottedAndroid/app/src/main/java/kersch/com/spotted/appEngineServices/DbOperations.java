@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -16,8 +15,7 @@ import kersch.com.backend.pinService.model.CollectionResponsePinRecord;
 import kersch.com.backend.pinService.model.CollectionResponseResponseRecord;
 import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.backend.registration.Registration;
-import kersch.com.backend.registration.model.CollectionResponseRegistrationRecord;
-import kersch.com.spotted.utils.NotRegisteredForMessagesException;
+import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
 
@@ -34,13 +32,13 @@ import java.util.List;
 public class DbOperations {
 
 	private static PinService pinService = null;
+	private static Registration regService = null;
 	private static Handler messageHandler = null;
 
-	private static Registration regService = null;
 	private static GoogleCloudMessaging gcm;
 	private static SharedPreferences sharedPreferences;
 
-	/** Method that initializes a pinservice if recuired and the returns it.
+	/** Method that initializes the pinservice if required and the returns it.
 	 * @return a pinservice to communicate with the backend.
 	 */
 	public static synchronized PinService getPinService() {
@@ -67,13 +65,12 @@ public class DbOperations {
 				builder = new PinService.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
 						.setRootUrl("https://black-alpha-838.appspot.com/_ah/api/");
 			}
-
 			pinService = builder.build();
 		}
 		return pinService;
 	}
 
-	/** This method registers a device for recieving GoogleCloudMessaging.
+	/** This method registers a device for receiving GoogleCloudMessaging. And saves the id in sp
 	 * @param context
 	 * @param sp a shared preference to store the registration id in.
 	 */
@@ -114,7 +111,7 @@ public class DbOperations {
 	/** Registers a handler to recieves messages from loadPinsFromDatabase.
 	 * @return true if successfully registered the handler. false if a handler is already registered.
 	 */
-	public static boolean registerForMessages(final Handler handler) {
+	public static boolean registerMessageHandler(final Handler handler) {
 		if(messageHandler == null) {
 			messageHandler = handler;
 		} else {
@@ -126,7 +123,7 @@ public class DbOperations {
 	/** Unregisters the handler that recieves messages from loadPinsFromDatabase.
 	 * @return true if successfully unregistered the handler. false if no handler is registered.
 	 */
-	public static boolean unregisterForMessages() {
+	public static boolean unregisterMessageHandler() {
 		if(messageHandler == null) {
 			return false;
 		} else {
@@ -137,17 +134,17 @@ public class DbOperations {
 
 	/** Returns true if a handler has registered for recieving messages. False otherwise.
 	 */
-	public static boolean isRegisteredForMessages() {
+	public static boolean isMessageHandlerRegistered() {
 		return (messageHandler != null);
 	}
 
 	/** This method loads pins from a database and send the result in a message
 	 * to the specified handler
-	 * @throws kersch.com.spotted.utils.NotRegisteredForMessagesException if no handler has been registered
+	 * @throws kersch.com.spotted.utils.NoMessageHandlerRegisteredException if no handler has been registered
 	 */
-	public static void loadPinsFromDatabase() throws NotRegisteredForMessagesException {
+	public static void loadPinsFromDatabase() throws NoMessageHandlerRegisteredException {
 		if(messageHandler == null) {
-			throw new NotRegisteredForMessagesException("Not handler has been specified. Please call " +
+			throw new NoMessageHandlerRegisteredException("Not handler has been specified. Please call " +
 					"registerForMessages with a handler before calling this method.");
 		}
 		new AsyncTask<Void, Void, List<Pin>>() {
@@ -172,20 +169,13 @@ public class DbOperations {
 
 			@Override
 			protected void onPostExecute(List<Pin> pins) {
-				// Add pins to map
+				// Send pins to registered handler
 				Message m = Message.obtain();
 				m.what = Constants.DATABASE_UPDATE_ID;
 				m.obj = pins;
 				messageHandler.sendMessage(m);
 			}
 		}.execute();
-	}
-
-	// Store registration id in sharedPreferences.
-	private static void storeRegistrationId(String regId) {
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString(Constants.PROPERTY_REG_ID, regId);
-		editor.apply();
 	}
 
 	// Initalize the registraton service
@@ -215,5 +205,12 @@ public class DbOperations {
 			}
 			regService = builder.build();
 		}
+	}
+
+	// Store registration id in sharedPreferences.
+	private static void storeRegistrationId(String regId) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString(Constants.PROPERTY_REG_ID, regId);
+		editor.apply();
 	}
 }

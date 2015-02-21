@@ -9,6 +9,7 @@ import com.google.api.client.util.DateTime;
  * Time: 02:11
  */
 public class Utils {
+
 	/** Returns a formatted string of the date. On the form 00:00 - 2000-01-01
 	 */
 	public static String getFormatedDate(DateTime date) {

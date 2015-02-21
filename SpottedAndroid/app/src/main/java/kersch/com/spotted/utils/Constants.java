@@ -16,5 +16,6 @@ public class Constants {
 	// Sender ID = Project number
 	public static final String SENDER_ID = "14744998140";
 
+	// ID for database update messages
 	public static final int DATABASE_UPDATE_ID = 0x01;
 }

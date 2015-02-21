@@ -50,7 +50,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public void onActivityCreated(Bundle bundle) {
 		super.onActivityCreated(bundle);
-
 		// Initialize spinner
 		Spinner spinner = (Spinner) getView().findViewById(R.id.lifetime_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -79,7 +78,8 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		if (v.getId() == R.id.commit_pin) {
 			EditText title = (EditText) getView().findViewById(R.id.enter_title);
 			EditText message = (EditText) getView().findViewById(R.id.enter_message);
-			((MapActivity) getActivity()).addMarkerToMap(title.getText().toString(), message.getText().toString(), 30000);
+			// TODO the lifetime
+			((MapActivity) getActivity()).addPin(title.getText().toString(), message.getText().toString(), 30000);
 			getFragmentManager().popBackStackImmediate();
 		} else if (v.getId() == R.id.cancel_pin) {
 			getFragmentManager().popBackStackImmediate();

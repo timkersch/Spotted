@@ -28,16 +28,17 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 
 	/* Private view holder class*/
 	private class ViewHolder {
-		ImageButton marker;
-		TextView title;
-		TextView distance;
-		TextView date;
-		TextView expires;
-		TextView message;
-		Button likesButton;
-		Button commentButton;
-		Button likeButton;
-		Button commentsButton;
+		private ImageButton marker;
+		private TextView title;
+		private TextView date;
+		private TextView message;
+		private Button likesButton;
+		private Button commentButton;
+		private Button likeButton;
+		private Button commentsButton;
+		// TODO
+		private TextView distance;
+		private TextView expires;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -94,10 +95,16 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 		return convertView;
 	}
 
+	/** Interface to have te ability to handle clicks in activity.
+	 * Register an object to this interface with setOnCommentsButtonClickedListener()
+	 */
 	public interface OnCommentsButtonClicked {
 		public void commentsButtonClicked(Pin pin);
 	}
 
+	/** Set a OnCommentsButtonClickedListener
+	 * @param clicked the listener
+	 */
 	public void setOnCommentsButtonClickedListener(OnCommentsButtonClicked clicked) {
 		this.commentsButtonClicked = clicked;
 	}

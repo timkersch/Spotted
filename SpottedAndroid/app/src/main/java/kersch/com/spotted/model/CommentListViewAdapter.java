@@ -18,7 +18,7 @@ import java.util.List;
  * Time: 02:12
  */
 public class CommentListViewAdapter extends ArrayAdapter<Response> {
-	Context context;
+	private Context context;
 
 	public CommentListViewAdapter(Context context, int resourceId, List<Response> items) {
 		super(context, resourceId, items);
@@ -27,8 +27,8 @@ public class CommentListViewAdapter extends ArrayAdapter<Response> {
 
 	/* Private view holder class*/
 	private class ViewHolder {
-		TextView date;
-		TextView message;
+		private TextView date;
+		private TextView message;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {

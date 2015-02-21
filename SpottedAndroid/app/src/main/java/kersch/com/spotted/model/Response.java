@@ -13,28 +13,44 @@ import kersch.com.backend.pinService.model.ResponseRecord;
  * Time: 03:00
  */
 public class Response implements Parcelable {
+	// The message of the response
 	private String message;
+	// The date of the response
 	private DateTime date;
 
-	// Instances can only be created from the outer class.
+	// Pass a message to create an instance of this class
 	protected Response(String message) {
 		this.message = message;
+		// Date is generated
 		this.date = new DateTime(System.currentTimeMillis());
 	}
 
+	// This constructor is used to reconstruct Response objects from database
 	protected Response(ResponseRecord response) {
 		this.message = response.getMessage();
 		this.date = response.getDate();
 	}
 
+	// Private constructor to reconstruct from parcel
+	private Response(Parcel in) {
+		message = in.readString();
+		long time = in.readInt();
+		date = new DateTime(time);
+	}
+
+	/** Returns the date of this response.
+	 */
 	public DateTime getDate() {
 		return date;
 	}
 
+	/** Returns the message of this response.
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	// Used to describe parcelable contents
 	public int describeContents() {
 		return 0;
 	}
@@ -45,14 +61,7 @@ public class Response implements Parcelable {
 		out.writeLong(date.getValue());
 	}
 
-	// Read object data from parcel
-	private Response(Parcel in) {
-		message = in.readString();
-		long time = in.readInt();
-		date = new DateTime(time);
-	}
-
-	// All Parcelables must have a CREATOR that implements these two methods. Regenerates the object
+	// Calls private constructor to regenerate object.
 	public static final Parcelable.Creator<Response> CREATOR = new Parcelable.Creator<Response>() {
 		public Response createFromParcel(Parcel in) {
 			return new Response(in);

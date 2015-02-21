@@ -29,6 +29,11 @@ public class PinEndpoint {
 
 	private static final Logger log = Logger.getLogger(PinEndpoint.class.getName());
 
+	private static final String PIN_ADDED = "PIN_ADDED";
+	private static final String LIKES_INCREMENTED = "LIKES_INCREMENTED";
+	private static final String RESPONSE_ADDED = "RESPONSE_ADDED";
+	private static final String PIN_REMOVED = "PIN_REMOVED";
+
 	@ApiMethod(name = "registerPin")
 	public PinRecord registerPin(@Named("title") String title,
 	                        @Named("message") String message,
@@ -44,7 +49,7 @@ public class PinEndpoint {
 		record.setTimeStamp(date);
 
 		ofy().save().entity(record).now();
-		sendUpdateMessage("PIN_ADDED");
+		sendUpdateMessage(PIN_ADDED);
 		return record;
 	}
 
@@ -57,7 +62,7 @@ public class PinEndpoint {
 		}
 		record.incrementLikes();
 		ofy().save().entity(record).now();
-		sendUpdateMessage("LIKES_INCREMENTED");
+		sendUpdateMessage(LIKES_INCREMENTED);
 	}
 
 	@ApiMethod(name = "addResponse")
@@ -67,7 +72,7 @@ public class PinEndpoint {
 		record.setMessage(response);
 		record.setBelongsToPinId(pinId);
 		ofy().save().entity(record).now();
-		sendUpdateMessage("RESPONSE_ADDED");
+		sendUpdateMessage(RESPONSE_ADDED);
 	}
 
 	@ApiMethod(name = "removePin")
@@ -78,7 +83,7 @@ public class PinEndpoint {
 			return;
 		}
 		ofy().delete().entity(record).now();
-		sendUpdateMessage("PIN_REMOVED");
+		sendUpdateMessage(PIN_REMOVED);
 	}
 
 	@ApiMethod(name = "getPinResponses")
@@ -138,7 +143,7 @@ public class PinEndpoint {
 
 	private void removePin(PinRecord record) {
 		ofy().delete().entity(record).now();
-		sendUpdateMessage("PIN_REMOVED");
+		sendUpdateMessage(PIN_REMOVED);
 	}
 
 	/*private void threadSchedueler(final PinRecord record, @Named("waitTime") final long waitTime) {

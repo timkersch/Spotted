@@ -40,10 +40,10 @@ public class Pin implements Parcelable {
 	private int likes;
 
 	/** Create a new pin with a lat and longitude.
-	 * @param latitude
-	 * @param longitude
-	 * @param title
-	 * @param message
+	 * @param latitude the latitude of the pin
+	 * @param longitude the longitude of the pin
+	 * @param title the title for the pin
+	 * @param message the message for the pin
 	 */
 	public Pin(float latitude, float longitude, String title, String message, long lifetimeInMilliseconds) {
 		this.geoPt = new GeoPt();
@@ -55,20 +55,21 @@ public class Pin implements Parcelable {
 		this.pinDrawableId = RandomPins.getPinId();
 		this.date = new DateTime(System.currentTimeMillis());
 		this.likes = 0;
-		addToDatabase();
+		addPinToDatabase();
 	}
 
 	/** Create a new Pin with a GeoPt.
-	 * @param geoPt
-	 * @param title
-	 * @param message
+	 * @param geoPt the geographic position of the pin
+	 * @param title the title of the pin
+	 * @param message the message of the pin
 	 */
 	public Pin(GeoPt geoPt, String title, String message, long lifetimeInMilliseconds) {
 		this(geoPt.getLatitude(), geoPt.getLongitude(), title, message, lifetimeInMilliseconds);
 	}
 
 	/** Create a new Pin from a PinRecord from the database
-	 * @param pinRecord the pinrecord from the database
+	 * @param pinRecord the pinRecord from the database
+	 * @param responses a list of the responseRecord associated with this pin
 	 */
 	public Pin(PinRecord pinRecord, List<ResponseRecord> responses) {
 		this.pinDrawableId = RandomPins.getPinId();
@@ -80,10 +81,30 @@ public class Pin implements Parcelable {
 		this.date = pinRecord.getTimeStamp();
 		this.id = pinRecord.getId();
 		if(responses != null) {
+			// Add all responses for this pin
 			for (ResponseRecord record : responses) {
 				this.responses.add(new Response(record));
 			}
 		}
+	}
+
+	// Private constructor to reconstruct object with Parcel
+	private Pin(Parcel in) {
+		float lat = in.readFloat();
+		float lon = in.readFloat();
+		title = in.readString();
+		message = in.readString();
+		lifetimeInMilliseconds = in.readLong();
+		long time = in.readLong();
+		pinDrawableId = in.readInt();
+		in.readTypedList(responses, Response.CREATOR);
+		id = in.readLong();
+		likes = in.readInt();
+
+		geoPt = new GeoPt();
+		geoPt.setLatitude(lat);
+		geoPt.setLongitude(lon);
+		date = new DateTime(time);
 	}
 
 	/** Method that return the immutable GeoPt of the pin.
@@ -176,29 +197,6 @@ public class Pin implements Parcelable {
 		return pinDrawableId;
 	}
 
-	// Convert GeoPt to LatLng
-	private LatLng toLatLng() {
-		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
-	}
-
-	// Adds a pin to the database
-	private void addToDatabase() {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					PinRecord record = DbOperations.getPinService()
-							.registerPin(title, message, lifetimeInMilliseconds, date, geoPt)
-							.execute();
-					id = record.getId();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-				return null;
-			}
-		}.execute();
-	}
-
 	/** Returns the number of likes on this pin.
 	 */
 	public int getLikes() {
@@ -232,7 +230,31 @@ public class Pin implements Parcelable {
 		return false;
 	}
 
-	// write your object's data to the passed-in Parcel
+	// Adds a pin to the database
+	private void addPinToDatabase() {
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					PinRecord record = DbOperations.getPinService()
+							.registerPin(title, message, lifetimeInMilliseconds, date, geoPt)
+							.execute();
+					// Set the id of this pin
+					id = record.getId();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+				return null;
+			}
+		}.execute();
+	}
+
+	// Helper method to convert GeoPt to LatLng
+	private LatLng toLatLng() {
+		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
+	}
+
+	// Write object to parcel
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeFloat(geoPt.getLatitude());
 		out.writeFloat(geoPt.getLongitude());
@@ -246,26 +268,7 @@ public class Pin implements Parcelable {
 		out.writeInt(likes);
 	}
 
-	// example constructor that takes a Parcel and gives you an object populated with it's values
-	private Pin(Parcel in) {
-		float lat = in.readFloat();
-		float lon = in.readFloat();
-		title = in.readString();
-		message = in.readString();
-		lifetimeInMilliseconds = in.readLong();
-		long time = in.readLong();
-		pinDrawableId = in.readInt();
-		in.readTypedList(responses, Response.CREATOR);
-		id = in.readLong();
-		likes = in.readInt();
-
-		geoPt = new GeoPt();
-		geoPt.setLatitude(lat);
-		geoPt.setLongitude(lon);
-		date = new DateTime(time);
-	}
-
-	// this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+	// Method to reconstruct object with parcel
 	public static final Parcelable.Creator<Pin> CREATOR = new Parcelable.Creator<Pin>() {
 		public Pin createFromParcel(Parcel in) {
 			return new Pin(in);
@@ -276,7 +279,7 @@ public class Pin implements Parcelable {
 		}
 	};
 
-	// 99.9% of the time you can just ignore this
+	// Describe contet of parcel
 	public int describeContents() {
 		return 0;
 	}

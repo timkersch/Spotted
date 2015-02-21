@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 /** A BroadcastReceiver to recieve messages from Google Cloud Messaging
- *
  */
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 	@Override
