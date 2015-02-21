@@ -33,7 +33,7 @@ public class GcmIntentService extends IntentService {
 		if (extras != null && !extras.isEmpty()) {  // has effect of unparcelling Bundle
 			// Since we're not using two way messaging, this is all we really to check for
 			if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-				updateDevice();
+				updateDevice(extras.);
 			}
 		}
 		GcmBroadcastReceiver.completeWakefulIntent(intent);

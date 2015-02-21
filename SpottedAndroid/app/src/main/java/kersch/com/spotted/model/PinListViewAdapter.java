@@ -38,7 +38,6 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 		Button commentButton;
 		Button likeButton;
 		Button commentsButton;
-
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
