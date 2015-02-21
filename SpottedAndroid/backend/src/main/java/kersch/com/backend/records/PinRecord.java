@@ -5,6 +5,7 @@ import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
+import com.google.appengine.api.datastore.Text;
 
 import java.util.Date;
 import java.util.List;
@@ -17,11 +18,10 @@ import java.util.List;
  */
 @Entity
 public class PinRecord {
-
 	@Id
+	@Index
 	private Long id;
 
-	@Index
 	private String title;
 
 	// Geographical location
@@ -35,7 +35,7 @@ public class PinRecord {
 
 	private long lifeLengthInMilliseconds;
 
-	private List<String> responses;
+	private int likes;
 
 	public int getLikes() {
 		return likes;
@@ -44,16 +44,6 @@ public class PinRecord {
 	public void setLikes(int likes) {
 		this.likes = likes;
 	}
-
-	public List<String> getResponses() {
-		return responses;
-	}
-
-	public void setResponses(List<String> responses) {
-		this.responses = responses;
-	}
-
-	private int likes;
 
 	public Date getTimeStamp() {
 		return date;
@@ -97,5 +87,13 @@ public class PinRecord {
 
 	public void setGeoPoint(GeoPt geoPoint) {
 		this.geoPoint = geoPoint;
+	}
+
+	public long getID() {
+		return id;
+	}
+
+	public void incrementLikes() {
+		likes = likes + 1;
 	}
 }

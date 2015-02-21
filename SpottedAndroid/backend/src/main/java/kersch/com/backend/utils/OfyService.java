@@ -3,6 +3,7 @@ package kersch.com.backend.utils;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import kersch.com.backend.records.ResponseRecord;
 import kersch.com.backend.records.PinRecord;
 import kersch.com.backend.records.RegistrationRecord;
 
@@ -15,6 +16,7 @@ public class OfyService {
 	static {
 		factory().register(RegistrationRecord.class);
 		factory().register(PinRecord.class);
+		factory().register(ResponseRecord.class);
 		// Add other records here
 	}
 

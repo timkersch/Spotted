@@ -6,33 +6,31 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import kersch.com.spotted.R;
-import kersch.com.spotted.activities.MapActivity;
+import kersch.com.spotted.model.CommentListViewAdapter;
 import kersch.com.spotted.model.Pin;
-import kersch.com.spotted.model.PinListViewAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * A fragment representing a list of Pins.
+ * A fragment representing a list of Comments.
  */
-public class PinListFragment extends ListFragment implements PinListViewAdapter.OnCommentsButtonClicked {
+public class CommentListFragment extends ListFragment {
 
-	private static final String PARAM = "PinList";
+	private static final String PARAM = "Pin";
 
-	private OnFragmentInteractionListener fragmentInteractionListener;
+	private OnFragmentInteractionListener mListener;
 
-	private List<Pin> pinList;
+	private Pin pin;
 
-	public PinListFragment() {
-		// Mandatory empty constructor
+	/**
+	 * Mandatory empty constructor for the fragment manager to instantiate the
+	 * fragment (e.g. upon screen orientation changes).
+	 */
+	public CommentListFragment() {
 	}
 
-	// Use this method to pass arguments to fragment
-	public static PinListFragment newInstance(ArrayList<Pin> pinList) {
-		PinListFragment fragment = new PinListFragment();
+	public static CommentListFragment newInstance(Pin pin) {
+		CommentListFragment fragment = new CommentListFragment();
 		Bundle args = new Bundle();
-		args.putParcelableArrayList(PARAM, pinList);
+		args.putParcelable(PARAM, pin);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -41,48 +39,42 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			pinList = getArguments().getParcelableArrayList(PARAM);
+			pin = getArguments().getParcelable(PARAM);
 		}
 		updateList();
 	}
 
 	private void updateList() {
-		PinListViewAdapter adapter = new PinListViewAdapter(getActivity(), R.layout.fragment_list_pin, pinList);
-		adapter.setOnCommentsButtonClickedListener(this);
-		setListAdapter(adapter);
+		setListAdapter(new CommentListViewAdapter(getActivity(), R.layout.fragment_list_comments, pin.getResponses()));
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			fragmentInteractionListener = (OnFragmentInteractionListener) activity;
+			mListener = (OnFragmentInteractionListener) activity;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnFragmentInteractionListener");
 		}
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		fragmentInteractionListener = null;
+		mListener = null;
 	}
+
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
-		if (null != fragmentInteractionListener) {
+		if (null != mListener) {
 			// Notify the active callbacks interface (the activity, if the
 			// fragment is attached to one) that an item has been selected.
-			//fragmentInteractionListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+			//mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
 		}
-	}
-
-	@Override
-	public void commentsButtonClicked(Pin pin) {
-		MapActivity activity = (MapActivity) getActivity();
-		activity.addCommentsFragment(pin);
 	}
 
 	/**

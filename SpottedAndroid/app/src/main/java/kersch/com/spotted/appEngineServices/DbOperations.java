@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -12,8 +13,10 @@ import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import kersch.com.backend.pinService.PinService;
 import kersch.com.backend.pinService.model.CollectionResponsePinRecord;
+import kersch.com.backend.pinService.model.CollectionResponseResponseRecord;
 import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.backend.registration.Registration;
+import kersch.com.backend.registration.model.CollectionResponseRegistrationRecord;
 import kersch.com.spotted.utils.NotRegisteredForMessagesException;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
@@ -157,7 +160,8 @@ public class DbOperations {
 					if (pr != null) {
 						pinList = new ArrayList<>(pr.size());
 						for (int i = 0; i < pr.size(); i++) {
-							pinList.add(new Pin(pr.get(i)));
+							CollectionResponseResponseRecord cm = getPinService().getPinResponses(pr.get(i).getId()).execute();
+							pinList.add(new Pin(pr.get(i), cm.getItems()));
 						}
 					}
 				} catch (IOException e) {

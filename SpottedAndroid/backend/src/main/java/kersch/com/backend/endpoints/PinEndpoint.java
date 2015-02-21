@@ -5,14 +5,14 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.GeoPt;
-import com.google.appengine.repackaged.com.google.api.client.util.DateTime;
+import kersch.com.backend.records.ResponseRecord;
 import kersch.com.backend.records.PinRecord;
-import kersch.com.backend.records.RegistrationRecord;
 
 import javax.inject.Named;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,8 +29,8 @@ public class PinEndpoint {
 
 	private static final Logger log = Logger.getLogger(PinEndpoint.class.getName());
 
-	@ApiMethod(name = "registerpin")
-	public void registerPin(@Named("title") String title,
+	@ApiMethod(name = "registerPin")
+	public PinRecord registerPin(@Named("title") String title,
 	                        @Named("message") String message,
 	                        @Named("lifetime") long lifetime,
 	                        @Named("date") Date date,
@@ -42,23 +42,56 @@ public class PinEndpoint {
 		record.setGeoPoint(geoPt);
 		record.setMessage(message);
 		record.setTimeStamp(date);
+
 		ofy().save().entity(record).now();
-		try {
-			//TODO
-			new MessagingEndpoint().sendMessage("Records updated");
-		} catch (IOException e) {
-			// TODO
-		}
+		sendUpdateMessage("PIN_ADDED");
+		return record;
 	}
 
-	@ApiMethod(name = "removepin")
-	public void removePin(@Named("title") String title) {
-		PinRecord record = findRecord(title);
+	@ApiMethod(name = "incrementLikes")
+	public void incrementLikes(@Named("entityId") long id) {
+		PinRecord record = findRecord(id);
+		if (record == null) {
+			log.info("Pin does not exist");
+			return;
+		}
+		record.incrementLikes();
+		ofy().save().entity(record).now();
+		sendUpdateMessage("LIKES_INCREMENTED");
+	}
+
+	@ApiMethod(name = "addResponse")
+	public void addResponse(@Named("pinId") long pinId, @Named("response") String response, @Named("date") Date date) {
+		ResponseRecord record = new ResponseRecord();
+		record.setDate(date);
+		record.setMessage(response);
+		record.setBelongsToPinId(pinId);
+		ofy().save().entity(record).now();
+		sendUpdateMessage("RESPONSE_ADDED");
+	}
+
+	@ApiMethod(name = "removePin")
+	public void removePin(@Named("entityId") long id) {
+		PinRecord record = findRecord(id);
 		if (record == null) {
 			log.info("Pin does not exist");
 			return;
 		}
 		ofy().delete().entity(record).now();
+		sendUpdateMessage("PIN_REMOVED");
+	}
+
+	@ApiMethod(name = "getPinResponses")
+	public CollectionResponse<ResponseRecord> getPinResponses(@Named("pinId") long belongsToPinId) {
+		// TODO should use .filter() but it is not working?
+		List<ResponseRecord> records = ofy().load().type(ResponseRecord.class).list();
+		Iterator<ResponseRecord> it = records.iterator();
+		while(it.hasNext()) {
+			if(it.next().getBelongsToPinId() != belongsToPinId) {
+				it.remove();
+			}
+		}
+		return CollectionResponse.<ResponseRecord>builder().setItems(records).build();
 	}
 
 	/**
@@ -90,8 +123,36 @@ public class PinEndpoint {
 		return CollectionResponse.<PinRecord>builder().setItems(records).build();
 	}
 
-	private PinRecord findRecord(String title) {
-		// TODO do not find pins based on title
-		return ofy().load().type(PinRecord.class).filter("title", title).first().now();
+	private PinRecord findRecord(long id) {
+		return ofy().load().type(PinRecord.class).filter("id", id).first().now();
 	}
+
+	private void sendUpdateMessage(String message) {
+		try {
+			//TODO
+			new MessagingEndpoint().sendMessage(message);
+		} catch (IOException e) {
+			// TODO
+		}
+	}
+
+	private void removePin(PinRecord record) {
+		ofy().delete().entity(record).now();
+		sendUpdateMessage("PIN_REMOVED");
+	}
+
+	/*private void threadSchedueler(final PinRecord record, @Named("waitTime") final long waitTime) {
+		Thread schedThread = ThreadManager.createBackgroundThread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					new Object().wait(waitTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				removePin(record);
+			}
+		});
+		schedThread.start();
+	} */
 }

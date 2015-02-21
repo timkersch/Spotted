@@ -25,6 +25,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import kersch.com.spotted.R;
 import kersch.com.spotted.fragments.AddFragment;
+import kersch.com.spotted.fragments.CommentFragment;
+import kersch.com.spotted.fragments.CommentListFragment;
 import kersch.com.spotted.fragments.PinListFragment;
 import kersch.com.spotted.appEngineServices.DbOperations;
 import kersch.com.spotted.utils.NotRegisteredForMessagesException;
@@ -39,7 +41,9 @@ public class MapActivity extends FragmentActivity implements
 		GoogleApiClient.OnConnectionFailedListener,
 		com.google.android.gms.location.LocationListener,
 		PinListFragment.OnFragmentInteractionListener,
-		AddFragment.OnFragmentInteractionListener {
+		AddFragment.OnFragmentInteractionListener,
+		CommentListFragment.OnFragmentInteractionListener,
+		CommentFragment.OnFragmentInteractionListener {
 
 	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
 	private GoogleMap map;
@@ -96,6 +100,19 @@ public class MapActivity extends FragmentActivity implements
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			setUpMapIfNeeded();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (googleApiClient.isConnected() && !requestingLocationUpdates) {
+			startLocationUpdates();
+		}
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -116,26 +133,13 @@ public class MapActivity extends FragmentActivity implements
 			try {
 				DbOperations.loadPinsFromDatabase();
 			} catch (NotRegisteredForMessagesException e) {
-
+				Log.d(e.getMessage() + "", "");
 			}
 		} else if(id == R.id.action_filter) {
 			// TODO
 		}
 
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		try {
-			setUpMapIfNeeded();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if (googleApiClient.isConnected() && !requestingLocationUpdates) {
-			startLocationUpdates();
-		}
 	}
 
 	@Override
@@ -199,6 +203,14 @@ public class MapActivity extends FragmentActivity implements
 		addMarkerButton.setOnClickListener(addListener);
 	}
 
+	public void addCommentsFragment(Pin pin) {
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		CommentListFragment clf = CommentListFragment.newInstance(pin);
+		ft.add(R.id.fragment_container, clf);
+		ft.addToBackStack("commentListFragment");
+		ft.commit();
+	}
+
 	// Initialize tabs
 	private void initTabs() {
 		TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -211,7 +223,7 @@ public class MapActivity extends FragmentActivity implements
 					// TODO
 				} else {
 					FragmentTransaction ft = fragmentManager.beginTransaction();
-					PinListFragment fragment = new PinListFragment();
+					PinListFragment fragment = PinListFragment.newInstance(new ArrayList<>(pinMarkerMap.values()));
 					ft.replace(R.id.list_frame, fragment);
 					ft.commit();
 				}
@@ -263,8 +275,18 @@ public class MapActivity extends FragmentActivity implements
 		addMarker(pin);
 	}
 
+	// Removes a marker from the map and from the pinMarkerMap
 	private void removeMarker(Marker marker) {
+		marker.remove();
+		pinMarkerMap.remove(marker);
+	}
 
+	// Removes all markers from the map and clears the pinMarkerMap
+	private void removeAllMarkers() {
+		Set<Marker> markerList = pinMarkerMap.keySet();
+		for(Marker m : markerList) {
+			removeMarker(m);
+		}
 	}
 
 	protected void createLocationRequest() {
@@ -283,12 +305,18 @@ public class MapActivity extends FragmentActivity implements
 
 	public void updatePins(List<Pin> pinList) {
 		if (pinList != null) {
-			// TODO remove pins that are no longe on db
-			for (Pin pin : pinList) {
-				if(!pinMarkerMap.containsValue(pin)) {
+			for(Pin pin : pinList) {
+				if (!pinMarkerMap.values().contains(pin)) {
 					addMarker(pin);
 				}
 			}
+			for(Marker marker : pinMarkerMap.keySet()) {
+				if(!pinList.contains(pinMarkerMap.get(marker))) {
+					removeMarker(marker);
+				}
+			}
+		} else {
+			removeAllMarkers();
 		}
 	}
 

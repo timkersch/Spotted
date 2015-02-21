@@ -1,13 +1,12 @@
 package kersch.com.spotted.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,19 +26,20 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
 	private OnFragmentInteractionListener fragmentInteractionListener;
 
+	public AddFragment() {
+		// Required empty public constructor
+	}
+
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
+	 *
 	 * @return A new instance of fragment AddFragment.
 	 */
 	public static AddFragment newInstance() {
 		AddFragment fragment = new AddFragment();
 		return fragment;
 
-	}
-
-	public AddFragment() {
-		// Required empty public constructor
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		View view = inflater.inflate(R.layout.fragment_add, container, false);
 
 		// Get Buttons and set listeners
-		Button commit = (Button)view.findViewById(R.id.commit_pin);
-		Button cancel = (Button)view.findViewById(R.id.cancel_pin);
+		Button commit = (Button) view.findViewById(R.id.commit_pin);
+		Button cancel = (Button) view.findViewById(R.id.cancel_pin);
 		commit.setOnClickListener(this);
 		cancel.setOnClickListener(this);
 
@@ -76,12 +76,12 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == R.id.commit_pin) {
-			EditText title = (EditText)getView().findViewById(R.id.enter_title);
-			EditText message = (EditText)getView().findViewById(R.id.enter_message);
-			((MapActivity)getActivity()).addMarkerToMap(title.getText().toString(), message.getText().toString(), 0);
+		if (v.getId() == R.id.commit_pin) {
+			EditText title = (EditText) getView().findViewById(R.id.enter_title);
+			EditText message = (EditText) getView().findViewById(R.id.enter_message);
+			((MapActivity) getActivity()).addMarkerToMap(title.getText().toString(), message.getText().toString(), 30000);
 			getFragmentManager().popBackStackImmediate();
-		} else if(v.getId() == R.id.cancel_pin) {
+		} else if (v.getId() == R.id.cancel_pin) {
 			getFragmentManager().popBackStackImmediate();
 		} else {
 
@@ -104,6 +104,13 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		fragmentInteractionListener = null;
 	}
 
+	// TODO: Rename method, update argument and hook method into UI event
+	public void onButtonPressed(Uri uri) {
+		if (fragmentInteractionListener != null) {
+			fragmentInteractionListener.onFragmentInteraction(uri);
+		}
+	}
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
@@ -117,13 +124,6 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
-	}
-
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
-		if (fragmentInteractionListener != null) {
-			fragmentInteractionListener.onFragmentInteraction(uri);
-		}
 	}
 
 }
