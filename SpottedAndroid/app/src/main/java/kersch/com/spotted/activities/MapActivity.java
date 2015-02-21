@@ -7,9 +7,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,16 +23,16 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.Marker;
 import kersch.com.spotted.R;
+import kersch.com.spotted.appEngineServices.DbOperations;
 import kersch.com.spotted.fragments.AddFragment;
 import kersch.com.spotted.fragments.CommentFragment;
 import kersch.com.spotted.fragments.CommentListFragment;
 import kersch.com.spotted.fragments.PinListFragment;
-import kersch.com.spotted.appEngineServices.DbOperations;
-import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
+import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -46,27 +47,25 @@ public class MapActivity extends FragmentActivity implements
 		CommentFragment.OnFragmentInteractionListener {
 
 	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
-	private GoogleMap map;
-	private GoogleApiClient googleApiClient;
-	private Location currentLocation;
-	private LocationRequest locationRequest;
 	private final FragmentManager fragmentManager = getFragmentManager();
-
-	// TODO
-	private String lastUpdateTime;
-	// TODO
-	private boolean requestingLocationUpdates = true;
-
 	// This handler recieves messages when the database is updated
 	private final Handler dbHandler = new Handler() {
 		@Override
 		public void handleMessage(Message message) {
-			if(message.what == Constants.DATABASE_UPDATE_ID) {
+			if (message.what == Constants.DATABASE_UPDATE_ID) {
 				List<Pin> pinList = (List<Pin>) message.obj;
 				updatePins(pinList);
 			}
 		}
 	};
+	private GoogleMap map;
+	private GoogleApiClient googleApiClient;
+	private Location currentLocation;
+	private LocationRequest locationRequest;
+	// TODO
+	private String lastUpdateTime;
+	// TODO
+	private boolean requestingLocationUpdates = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +74,7 @@ public class MapActivity extends FragmentActivity implements
 
 		SharedPreferences sp = getSharedPreferences(MapActivity.class.getSimpleName(), Context.MODE_PRIVATE);
 
-		if(getRegistrationId(sp).isEmpty()) {
+		if (getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device for Google cloud messages
 			DbOperations.registerForGcm(this, sp);
 		}
@@ -134,13 +133,13 @@ public class MapActivity extends FragmentActivity implements
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 			return true;
-		} else if(id == R.id.action_refresh) {
+		} else if (id == R.id.action_refresh) {
 			try {
 				DbOperations.loadPinsFromDatabase();
 			} catch (NoMessageHandlerRegisteredException e) {
 				Log.d(e.getMessage() + "", "");
 			}
-		} else if(id == R.id.action_filter) {
+		} else if (id == R.id.action_filter) {
 			// TODO
 		}
 
@@ -149,7 +148,7 @@ public class MapActivity extends FragmentActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (fragmentManager.getBackStackEntryCount() >= 1){
+		if (fragmentManager.getBackStackEntryCount() >= 1) {
 			fragmentManager.popBackStackImmediate();
 			fragmentManager.beginTransaction().commit();
 		} else {
@@ -174,7 +173,7 @@ public class MapActivity extends FragmentActivity implements
 
 	// Initialize the fab button
 	private void initFabButton() {
-		FloatingActionButton addMarkerButton = (FloatingActionButton)findViewById(R.id.add_marker);
+		FloatingActionButton addMarkerButton = (FloatingActionButton) findViewById(R.id.add_marker);
 		addMarkerButton.setColorNormal(Color.parseColor("#C40000"));
 		addMarkerButton.setColorPressed((Color.parseColor("#DE5050")));
 		View.OnClickListener addListener = new View.OnClickListener() {
@@ -198,7 +197,7 @@ public class MapActivity extends FragmentActivity implements
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String tabId) {
-				if(tabId.equals("map")) {
+				if (tabId.equals("map")) {
 					// TODO
 				} else {
 					FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -231,9 +230,11 @@ public class MapActivity extends FragmentActivity implements
 		});
 	}
 
-	/** Add a marker to the map
-	 * @param title the title of the marker
-	 * @param message the message of the marker
+	/**
+	 * Add a marker to the map
+	 *
+	 * @param title                  the title of the marker
+	 * @param message                the message of the marker
 	 * @param lifetimeInMilliseconds the time tha marker is supposed to live
 	 */
 	public void addPin(String title, String message, long lifetimeInMilliseconds) {
@@ -242,7 +243,7 @@ public class MapActivity extends FragmentActivity implements
 
 	// Private method that adds a marker with a custom location - Used for testing only
 	private void addPin(String title, String message, long lifetimeInMilliseconds, Location location) {
-		Pin pin = new Pin((float)location.getLatitude(), (float)location.getLongitude(), title, message, lifetimeInMilliseconds);
+		Pin pin = new Pin((float) location.getLatitude(), (float) location.getLongitude(), title, message, lifetimeInMilliseconds);
 		addPin(pin);
 	}
 
@@ -259,20 +260,20 @@ public class MapActivity extends FragmentActivity implements
 	// Removes all markers from the map and clears the pinMarkerMap
 	private void removeAllPins() {
 		Set<Marker> markerList = pinMarkerMap.keySet();
-		for(Marker m : markerList) {
+		for (Marker m : markerList) {
 			removePin(m);
 		}
 	}
 
 	public void updatePins(List<Pin> pinList) {
 		if (pinList != null) {
-			for(Pin pin : pinList) {
+			for (Pin pin : pinList) {
 				if (!pinMarkerMap.values().contains(pin)) {
 					addPin(pin);
 				}
 			}
-			for(Marker marker : pinMarkerMap.keySet()) {
-				if(!pinList.contains(pinMarkerMap.get(marker))) {
+			for (Marker marker : pinMarkerMap.keySet()) {
+				if (!pinList.contains(pinMarkerMap.get(marker))) {
 					removePin(marker);
 				}
 			}
@@ -335,7 +336,7 @@ public class MapActivity extends FragmentActivity implements
 				.addOnConnectionFailedListener(this)
 				.addApi(LocationServices.API)
 				.build();
-		if(!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
+		if (!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
 			googleApiClient.connect();
 		}
 	}
