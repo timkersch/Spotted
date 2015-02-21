@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class PinListViewAdapter extends ArrayAdapter<Pin> {
 	private Context context;
-	private OnCommentsButtonClicked commentsButtonClicked;
+	private OnButtonClickedListener listener;
 
 	public PinListViewAdapter(Context context, int resourceId, List<Pin> items) {
 		super(context, resourceId, items);
@@ -82,30 +82,30 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 		holder.commentButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				pin.addResponse("A new response");
-				holder.commentsButton.setText(pin.getNumberOfResponses() + " Comments");
+				listener.commentButtonClicked(pin);
 			}
 		});
 		holder.commentsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				commentsButtonClicked.commentsButtonClicked(pin);
+				listener.commentsButtonClicked(pin);
 			}
 		});
 		return convertView;
 	}
 
 	/** Interface to have te ability to handle clicks in activity.
-	 * Register an object to this interface with setOnCommentsButtonClickedListener()
+	 * Register an object to this interface with setButtonClickedListeners()
 	 */
-	public interface OnCommentsButtonClicked {
+	public interface OnButtonClickedListener {
 		public void commentsButtonClicked(Pin pin);
+		public void commentButtonClicked(Pin pin);
 	}
 
-	/** Set a OnCommentsButtonClickedListener
-	 * @param clicked the listener
+	/** Set a OnButtonClickedListener
+	 * @param listener the listener
 	 */
-	public void setOnCommentsButtonClickedListener(OnCommentsButtonClicked clicked) {
-		this.commentsButtonClicked = clicked;
+	public void setButtonClickedListener(OnButtonClickedListener listener) {
+		this.listener= listener;
 	}
 }

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * A fragment representing a list of Pins.
  */
-public class PinListFragment extends ListFragment implements PinListViewAdapter.OnCommentsButtonClicked {
+public class PinListFragment extends ListFragment implements PinListViewAdapter.OnButtonClickedListener {
 
 	private static final String PARAM = "PinList";
 
@@ -48,7 +48,7 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 
 	private void updateList() {
 		PinListViewAdapter adapter = new PinListViewAdapter(getActivity(), R.layout.fragment_list_pin, pinList);
-		adapter.setOnCommentsButtonClickedListener(this);
+		adapter.setButtonClickedListener(this);
 		setListAdapter(adapter);
 	}
 
@@ -82,7 +82,13 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 	@Override
 	public void commentsButtonClicked(Pin pin) {
 		MapActivity activity = (MapActivity) getActivity();
-		activity.addCommentsFragment(pin);
+		activity.addCommentListFragment(pin);
+	}
+
+	@Override
+	public void commentButtonClicked(Pin pin) {
+		MapActivity activity = (MapActivity) getActivity();
+		activity.addCommentFragment(pin);
 	}
 
 	/**

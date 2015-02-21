@@ -15,27 +15,17 @@ import kersch.com.spotted.R;
 import kersch.com.spotted.activities.MapActivity;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AddFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AddFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment that shows an addView
  */
 public class AddFragment extends Fragment implements View.OnClickListener {
 
 	private OnFragmentInteractionListener fragmentInteractionListener;
 
 	public AddFragment() {
-		// Required empty public constructor
+		// Mandatory empty constructor
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @return A new instance of fragment AddFragment.
-	 */
+	/** Use this method to get new instance of this class. */
 	public static AddFragment newInstance() {
 		AddFragment fragment = new AddFragment();
 		return fragment;
@@ -84,7 +74,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		} else if (v.getId() == R.id.cancel_pin) {
 			getFragmentManager().popBackStackImmediate();
 		} else {
-
+			// TODO
 		}
 	}
 

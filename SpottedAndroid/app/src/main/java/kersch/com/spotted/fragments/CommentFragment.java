@@ -13,12 +13,7 @@ import kersch.com.spotted.R;
 import kersch.com.spotted.model.Pin;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CommentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CommentFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment that shows a comment view.
  */
 public class CommentFragment extends Fragment implements View.OnClickListener {
 	private static final String PARAM = "Pin";
@@ -27,14 +22,12 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
 	private Pin pin;
 
-	private Button commit = (Button)getActivity().findViewById(R.id.commit_comment);
-	private TextView comment = (TextView)getActivity().findViewById(R.id.comment_field);
+	private Button commit;
+	private Button cancel;
+	private TextView comment;
 
-	/**
-	 * Mandatory empty constructor for the fragment manager to instantiate the
-	 * fragment (e.g. upon screen orientation changes).
-	 */
 	public CommentFragment() {
+		// Mandatory empty constructor
 	}
 
 	public static CommentFragment newInstance(Pin pin) {
@@ -51,14 +44,19 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 		if (getArguments() != null) {
 			pin = getArguments().getParcelable(PARAM);
 		}
-		commit.setOnClickListener(this);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_comment, container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_comment, container, false);
+
+		commit = (Button) view.findViewById(R.id.commit_comment);
+		cancel = (Button) view.findViewById(R.id.cancel_comment);
+		comment = (TextView) view.findViewById(R.id.comment_field);
+		cancel.setOnClickListener(this);
+		commit.setOnClickListener(this);
+
+		return view;
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
@@ -90,8 +88,10 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 		if(v.getId() == commit.getId()) {
 			if(comment.getText() != null && comment.getText().length() > 0) {
 				pin.addResponse(comment.getText() + "");
-				// TODO quit this fragment
+				getFragmentManager().popBackStackImmediate();
 			}
+		} else if(v.getId() == cancel.getId()) {
+			getFragmentManager().popBackStackImmediate();
 		} else {
 			// TODO
 		}

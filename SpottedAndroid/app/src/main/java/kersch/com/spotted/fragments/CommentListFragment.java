@@ -20,11 +20,8 @@ public class CommentListFragment extends ListFragment {
 
 	private Pin pin;
 
-	/**
-	 * Mandatory empty constructor for the fragment manager to instantiate the
-	 * fragment (e.g. upon screen orientation changes).
-	 */
 	public CommentListFragment() {
+		// Mandatory empty constructor
 	}
 
 	public static CommentListFragment newInstance(Pin pin) {

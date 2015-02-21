@@ -163,11 +163,25 @@ public class MapActivity extends FragmentActivity implements
 		initMarkerListener();
 	}
 
-	public void addCommentsFragment(Pin pin) {
+	/** Adds a commentListFragment (connected to the pin) to the screen.
+	 * @param pin the pin that has the comments.
+	 */
+	public void addCommentListFragment(Pin pin) {
 		FragmentTransaction ft = fragmentManager.beginTransaction();
 		CommentListFragment clf = CommentListFragment.newInstance(pin);
 		ft.add(R.id.fragment_container, clf);
 		ft.addToBackStack("commentListFragment");
+		ft.commit();
+	}
+
+	/** Adds a commentFragment (connected to the pin) to the screen
+	 * @param pin the pin that is to be commented.
+	 */
+	public void addCommentFragment(Pin pin) {
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		CommentFragment cf = CommentFragment.newInstance(pin);
+		ft.add(R.id.fragment_container, cf);
+		ft.addToBackStack("commentFragment");
 		ft.commit();
 	}
 
@@ -247,6 +261,7 @@ public class MapActivity extends FragmentActivity implements
 		addPin(pin);
 	}
 
+	// Private method that adds an already created pin to the map
 	private void addPin(Pin pin) {
 		pinMarkerMap.put(map.addMarker(pin.getMarkerOptions()), pin);
 	}
