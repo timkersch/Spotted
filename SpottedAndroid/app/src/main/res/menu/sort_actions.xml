@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/date_sort"
+              android:checked="true"
+              android:title="Creation Date"/>
+        <item android:id="@+id/expiration_sort"
+              android:title="Expiration date" />
+        <item android:id="@+id/distance_sort"
+              android:title="Distance to pin" />
+        <item android:id="@+id/likes_and_comments_sort"
+              android:title="Likes and comments" />
+    </group>
+</menu>

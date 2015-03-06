@@ -1,6 +1,8 @@
 package kersch.com.spotted.utils;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.util.DateTime;
+import kersch.com.backend.pinService.model.GeoPt;
 
 /**
  * Created by: Tim Kerschbaumer
@@ -14,5 +16,9 @@ public class Utils {
 	 */
 	public static String getFormatedDate(DateTime date) {
 		return date.toString().substring(11,16) + " - " + date.toString().substring(0,10);
+	}
+
+	public static LatLng toLatLng(GeoPt geoPt) {
+		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
 	}
 }

@@ -2,10 +2,12 @@ package kersch.com.spotted.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.google.android.gms.maps.model.LatLng;
 import kersch.com.spotted.R;
 import kersch.com.spotted.utils.Utils;
 
@@ -20,10 +22,12 @@ import java.util.List;
  */
 public class PinListViewAdapter extends ArrayAdapter<Pin> {
 	private Context context;
+	private final LatLng currentPosition;
 	private OnButtonClickedListener listener;
 
-	public PinListViewAdapter(Context context, int resourceId, List<Pin> items) {
+	public PinListViewAdapter(Context context, int resourceId, List<Pin> items, LatLng currentPosition) {
 		super(context, resourceId, items);
+		this.currentPosition = currentPosition;
 		this.context = context;
 	}
 
@@ -67,6 +71,10 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
+		float[] distance = new float[3];
+		Location.distanceBetween(currentPosition.latitude, currentPosition.longitude,
+				pin.getLocation().getLatitude(), pin.getLocation().getLongitude(), distance);
+
 		holder.title.setText(pin.getTitle());
 		holder.message.setText(pin.getMessage());
 		holder.marker.setImageResource(pin.getPinDrawableId());
@@ -91,6 +99,8 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 				listener.likeButtonClicked(pin);
 			}
 		});
+
+		holder.distance.setText("Distance: " + Math.round(distance[0]) + "m");
 
 		return convertView;
 	}

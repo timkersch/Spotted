@@ -1,5 +1,6 @@
 package kersch.com.spotted.appEngineServices;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,11 +16,13 @@ import kersch.com.backend.pinService.model.CollectionResponsePinRecord;
 import kersch.com.backend.pinService.model.CollectionResponseResponseRecord;
 import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.backend.registration.Registration;
+import kersch.com.spotted.activities.MainActivity;
 import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,16 +141,33 @@ public class DbOperations {
 		return (messageHandler != null);
 	}
 
+	/** This method loads pins from database without a spinner */
+	public static void loadPinsFromDatabase() throws NoMessageHandlerRegisteredException {
+		loadPinsFromDatabase(null);
+	}
+
 	/** This method loads pins from a database and send the result in a message
-	 * to the specified handler
+	 * to the specified handler. It also shows a spinner to view the progress.
 	 * @throws kersch.com.spotted.utils.NoMessageHandlerRegisteredException if no handler has been registered
 	 */
-	public static void loadPinsFromDatabase() throws NoMessageHandlerRegisteredException {
+	public static void loadPinsFromDatabase(final Context context) throws NoMessageHandlerRegisteredException {
 		if(messageHandler == null) {
 			throw new NoMessageHandlerRegisteredException("No handler has been specified. Please call " +
 					"registerForMessages with a handler before calling this method.");
 		}
-		new AsyncTask<Void, Void, List<Pin>>() {
+		new AsyncTask<Void, Integer, List<Pin>>() {
+			ProgressDialog spinner = null;
+
+			@Override
+			protected void onPreExecute() {
+				if(context != null) {
+					spinner = new ProgressDialog(context, ProgressDialog.STYLE_SPINNER);
+					spinner.setMessage("Loading pins...");
+					spinner.setCancelable(false);
+					spinner.show();
+				}
+			}
+
 			@Override
 			protected List<Pin> doInBackground(Void... params) {
 				List<Pin> pinList = null;
@@ -174,6 +194,9 @@ public class DbOperations {
 				m.what = Constants.DATABASE_UPDATE_ID;
 				m.obj = pins;
 				messageHandler.sendMessage(m);
+				if(context != null) {
+					spinner.dismiss();
+				}
 			}
 		}.execute();
 	}

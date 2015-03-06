@@ -5,6 +5,7 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import com.google.android.gms.maps.model.LatLng;
 import kersch.com.spotted.R;
 import kersch.com.spotted.activities.MainActivity;
 import kersch.com.spotted.model.Pin;
@@ -19,20 +20,23 @@ import java.util.List;
  */
 public class PinListFragment extends ListFragment implements PinListViewAdapter.OnButtonClickedListener {
 
-	private static final String PARAM = "PinList";
+	private static final String PINLIST = "PinList";
+	private static final String POSITION = "CurrentPos";
 
 	private OnFragmentInteractionListener fragmentInteractionListener;
 
 	private List<Pin> pinList;
+	private LatLng currentPos;
 
 	public PinListFragment() {
 		// Mandatory empty constructor
 	}
 
-	public static PinListFragment newInstance(ArrayList<Pin> pinList) {
+	public static PinListFragment newInstance(ArrayList<Pin> pinList, LatLng currentPos) {
 		PinListFragment fragment = new PinListFragment();
 		Bundle args = new Bundle();
-		args.putParcelableArrayList(PARAM, pinList);
+		args.putParcelableArrayList(PINLIST, pinList);
+		args.putParcelable(POSITION, currentPos);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -41,14 +45,15 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			pinList = getArguments().getParcelableArrayList(PARAM);
+			pinList = getArguments().getParcelableArrayList(PINLIST);
+			currentPos = getArguments().getParcelable(POSITION);
 		}
 		updateList();
 	}
 
 	private void updateList() {
 		Collections.sort(pinList);
-		PinListViewAdapter adapter = new PinListViewAdapter(getActivity(), R.layout.fragment_list_pin, pinList);
+		PinListViewAdapter adapter = new PinListViewAdapter(getActivity(), R.layout.fragment_list_pin, pinList, currentPos);
 		adapter.setButtonClickedListener(this);
 		setListAdapter(adapter);
 	}
@@ -56,9 +61,10 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 	/** Update the listview with a new list of pins.
 	 * @param pinList the list of pins
 	 */
-	public void updateList(List<Pin> pinList) {
+	public void updateList(List<Pin> pinList, LatLng currentPos) {
 		if(this.getView() != null) {
 			this.pinList = new ArrayList<>(pinList);
+			this.currentPos = currentPos;
 			updateList();
 		}
 	}

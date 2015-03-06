@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/no_filter"
+              android:checked="true"
+              android:title="No filter"/>
+        <item android:id="@+id/distance_filter"
+              android:title="100 meters from me" />
+        <item android:id="@+id/recent_filter"
+              android:title="Recently updated" />
+        <item android:id="@+id/expires_filter"
+              android:title="Expires soon" />
+    </group>
+</menu>

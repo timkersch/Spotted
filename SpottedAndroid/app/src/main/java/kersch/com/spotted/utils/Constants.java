@@ -18,4 +18,7 @@ public class Constants {
 
 	// ID for database update messages
 	public static final int DATABASE_UPDATE_ID = 0x01;
+
+	// Earth radius
+	public static final double EARTH_RADIUS = 6371;
 }

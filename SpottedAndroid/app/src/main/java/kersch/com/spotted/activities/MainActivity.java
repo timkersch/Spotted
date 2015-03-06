@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.PopupMenu;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -24,6 +25,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import kersch.com.spotted.R;
 import kersch.com.spotted.appEngineServices.DbOperations;
@@ -45,7 +47,8 @@ public class MainActivity extends FragmentActivity implements
 		PinListFragment.OnFragmentInteractionListener,
 		AddFragment.OnFragmentInteractionListener,
 		CommentListFragment.OnFragmentInteractionListener,
-		CommentFragment.OnFragmentInteractionListener {
+		CommentFragment.OnFragmentInteractionListener,
+		PopupMenu.OnMenuItemClickListener {
 
 	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
 	private final FragmentManager fragmentManager = getFragmentManager();
@@ -69,6 +72,7 @@ public class MainActivity extends FragmentActivity implements
 	private CommentListFragment commentListFragment;
 	private PinListFragment pinListFragment;
 	private AddFragment addFragment;
+	private Menu actionMenu;
 
 	// TODO
 	private String lastUpdateTime;
@@ -102,7 +106,7 @@ public class MainActivity extends FragmentActivity implements
 
 		try {
 			// Initially load pins form database
-			DbOperations.loadPinsFromDatabase();
+			DbOperations.loadPinsFromDatabase(this);
 		} catch (NoMessageHandlerRegisteredException e) {
 			e.printStackTrace();
 		}
@@ -128,6 +132,7 @@ public class MainActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_main, menu);
+		this.actionMenu = menu;
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -140,18 +145,49 @@ public class MainActivity extends FragmentActivity implements
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
+			// TODO launch activity
 			return true;
 		} else if (id == R.id.action_refresh) {
 			try {
-				DbOperations.loadPinsFromDatabase();
+				DbOperations.loadPinsFromDatabase(this);
 			} catch (NoMessageHandlerRegisteredException e) {
 				Log.d(e.getMessage() + "", "");
 			}
 		} else if (id == R.id.action_filter) {
-			// TODO
+			showPopupMenu(item, R.menu.filter_action);
+		} else if (id == R.id.action_sort) {
+			showPopupMenu(item, R.menu.sort_actions);
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void showPopupMenu(MenuItem item, int menuId) {
+		final View view = findViewById(item.getItemId());
+		PopupMenu popup = new PopupMenu(this, view);
+		// This activity implements OnMenuItemClickListener
+		popup.setOnMenuItemClickListener(this);
+		popup.inflate(menuId);
+		popup.show();
+	}
+
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.no_filter:
+			case R.id.distance_filter:
+			case R.id.recent_filter:
+			case R.id.expires_filter:
+			case R.id.date_sort:
+			case R.id.expiration_sort:
+			case R.id.distance_sort:
+			case R.id.likes_and_comments_sort:
+				if (item.isChecked()) item.setChecked(false);
+				else item.setChecked(true);
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	@Override
@@ -220,10 +256,18 @@ public class MainActivity extends FragmentActivity implements
 			@Override
 			public void onTabChanged(String tabId) {
 				if (tabId.equals("map")) {
-					// TODO
+					if(actionMenu != null) {
+						actionMenu.setGroupVisible(R.id.filter_group, true);
+						actionMenu.setGroupVisible(R.id.sort_group, false);
+					}
 				} else {
+					if(actionMenu != null) {
+						actionMenu.setGroupVisible(R.id.filter_group, false);
+						actionMenu.setGroupVisible(R.id.sort_group, true);
+					}
 					FragmentTransaction ft = fragmentManager.beginTransaction();
-					pinListFragment = PinListFragment.newInstance(new ArrayList<>(pinMarkerMap.values()));
+					LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+					pinListFragment = PinListFragment.newInstance(new ArrayList<>(pinMarkerMap.values()), latLng);
 					ft.replace(R.id.list_frame, pinListFragment);
 					ft.commit();
 				}
@@ -330,7 +374,8 @@ public class MainActivity extends FragmentActivity implements
 
 	private void updatePinList(List<Pin> pinList) {
 		if(this.pinListFragment != null && pinList != null) {
-			this.pinListFragment.updateList(pinList);
+			LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+			this.pinListFragment.updateList(pinList, latLng);
 		}
 	}
 

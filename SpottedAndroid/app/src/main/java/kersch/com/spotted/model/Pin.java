@@ -14,6 +14,7 @@ import kersch.com.backend.pinService.model.PinRecord;
 import kersch.com.backend.pinService.model.ResponseRecord;
 import kersch.com.spotted.appEngineServices.DbOperations;
 import kersch.com.spotted.utils.RandomPins;
+import kersch.com.spotted.utils.Utils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -184,7 +185,7 @@ public class Pin implements Parcelable, Comparable<Pin> {
 	 */
 	public MarkerOptions getMarkerOptions() {
 		MarkerOptions opt = new MarkerOptions();
-		opt.position(toLatLng());
+		opt.position(Utils.toLatLng(geoPt));
 		opt.title(title);
 		opt.snippet(message);
 		opt.icon(BitmapDescriptorFactory.fromResource(pinDrawableId));
@@ -247,11 +248,6 @@ public class Pin implements Parcelable, Comparable<Pin> {
 				return null;
 			}
 		}.execute();
-	}
-
-	// Helper method to convert GeoPt to LatLng
-	private LatLng toLatLng() {
-		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
 	}
 
 	// Write object to parcel

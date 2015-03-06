@@ -9,10 +9,20 @@
     <item android:id="@+id/action_refresh"
           android:title="Refresh"
           android:icon="@drawable/ic_refresh_white_24dp"
-          android:showAsAction="ifRoom"/>
+          android:showAsAction="always"/>
 
+    <group android:id="@+id/filter_group">
     <item android:id="@+id/action_filter"
           android:title="Filter"
           android:icon="@drawable/ic_filter_list_white_24dp"
-          android:showAsAction="ifRoom"/>
+          android:showAsAction="always"/>
+    </group>
+
+    <group android:id="@+id/sort_group">
+    <item android:id="@+id/action_sort"
+          android:title="Sort"
+          android:visible="false"
+          android:icon="@drawable/ic_sort_white_24dp"
+          android:showAsAction="always"/>
+    </group>
 </menu>
