@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import kersch.com.spotted.R;
-import kersch.com.spotted.activities.MapActivity;
+import kersch.com.spotted.activities.MainActivity;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.model.PinListViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,7 +29,6 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 		// Mandatory empty constructor
 	}
 
-	// Use this method to pass arguments to fragment
 	public static PinListFragment newInstance(ArrayList<Pin> pinList) {
 		PinListFragment fragment = new PinListFragment();
 		Bundle args = new Bundle();
@@ -47,9 +47,38 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 	}
 
 	private void updateList() {
+		Collections.sort(pinList);
 		PinListViewAdapter adapter = new PinListViewAdapter(getActivity(), R.layout.fragment_list_pin, pinList);
 		adapter.setButtonClickedListener(this);
 		setListAdapter(adapter);
+	}
+
+	/** Update the listview with a new list of pins.
+	 * @param pinList the list of pins
+	 */
+	public void updateList(List<Pin> pinList) {
+		if(this.getView() != null) {
+			this.pinList = new ArrayList<>(pinList);
+			updateList();
+		}
+	}
+
+	@Override
+	public void commentsButtonClicked(Pin pin) {
+		MainActivity activity = (MainActivity) getActivity();
+		activity.addCommentListFragment(pin);
+	}
+
+	@Override
+	public void commentButtonClicked(Pin pin) {
+		MainActivity activity = (MainActivity) getActivity();
+		activity.addCommentFragment(pin);
+	}
+
+	@Override
+	public void likeButtonClicked(Pin pin) {
+		MainActivity activity = (MainActivity) getActivity();
+		activity.addLike(pin);
 	}
 
 	@Override
@@ -77,18 +106,6 @@ public class PinListFragment extends ListFragment implements PinListViewAdapter.
 			// fragment is attached to one) that an item has been selected.
 			//fragmentInteractionListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
 		}
-	}
-
-	@Override
-	public void commentsButtonClicked(Pin pin) {
-		MapActivity activity = (MapActivity) getActivity();
-		activity.addCommentListFragment(pin);
-	}
-
-	@Override
-	public void commentButtonClicked(Pin pin) {
-		MapActivity activity = (MapActivity) getActivity();
-		activity.addCommentFragment(pin);
 	}
 
 	/**

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import kersch.com.spotted.R;
-import kersch.com.spotted.activities.MapActivity;
+import kersch.com.spotted.activities.MainActivity;
 import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 
 /** Class that handles messages from Google cloud messaging
@@ -65,7 +65,7 @@ public class GcmIntentService extends IntentService {
 			NotificationManager mNotificationManager = (NotificationManager)
 					this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MapActivity.class), 0);
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
 			// TODO
 			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)

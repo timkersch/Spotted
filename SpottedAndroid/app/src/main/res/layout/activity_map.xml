@@ -35,7 +35,7 @@
                               android:layout_width="match_parent"
                               android:layout_height="fill_parent"
                               android:id="@+id/map"
-                              tools:context="kersch.com.spotted.activities.MapActivity"
+                              tools:context="kersch.com.spotted.activities.MainActivity"
                               android:name="com.google.android.gms.maps.SupportMapFragment"
                               android:layout_gravity="center_horizontal|bottom"/>
 

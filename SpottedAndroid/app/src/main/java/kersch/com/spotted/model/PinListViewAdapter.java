@@ -9,6 +9,7 @@ import android.widget.*;
 import kersch.com.spotted.R;
 import kersch.com.spotted.utils.Utils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,26 +72,26 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 		holder.marker.setImageResource(pin.getPinDrawableId());
 		holder.date.setText(Utils.getFormatedDate(pin.getDate()));
 		holder.likesButton.setText(pin.getLikes() + " Likes");
-		holder.commentsButton.setText(pin.getNumberOfResponses() + " Comments");
-		holder.likeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				pin.incrementLikes();
-				holder.likesButton.setText(pin.getLikes() + " Likes");
-			}
-		});
-		holder.commentButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				listener.commentButtonClicked(pin);
-			}
-		});
 		holder.commentsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				listener.commentsButtonClicked(pin);
 			}
 		});
+		holder.commentsButton.setText(pin.getNumberOfResponses() + " Comments");
+		holder.commentButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				listener.commentButtonClicked(pin);
+			}
+		});
+		holder.likeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				listener.likeButtonClicked(pin);
+			}
+		});
+
 		return convertView;
 	}
 
@@ -100,6 +101,7 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 	public interface OnButtonClickedListener {
 		public void commentsButtonClicked(Pin pin);
 		public void commentButtonClicked(Pin pin);
+		public void likeButtonClicked(Pin pin);
 	}
 
 	/** Set a OnButtonClickedListener

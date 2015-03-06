@@ -27,7 +27,7 @@ import java.util.List;
  * Date: 15-01-31
  * Time: 23:34
  */
-public class Pin implements Parcelable {
+public class Pin implements Parcelable, Comparable<Pin> {
 	private final GeoPt geoPt;
 	private final String title;
 	private final String message;
@@ -282,5 +282,16 @@ public class Pin implements Parcelable {
 	// Describe contet of parcel
 	public int describeContents() {
 		return 0;
+	}
+
+	@Override
+	public int compareTo(Pin pin) {
+		if(date.getValue() == pin.date.getValue()) {
+			return 0;
+		} else if(date.getValue() > pin.date.getValue()) {
+			return -1;
+		} else {
+			return 1;
+		}
 	}
 }

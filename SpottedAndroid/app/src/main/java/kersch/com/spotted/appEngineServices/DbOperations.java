@@ -144,7 +144,7 @@ public class DbOperations {
 	 */
 	public static void loadPinsFromDatabase() throws NoMessageHandlerRegisteredException {
 		if(messageHandler == null) {
-			throw new NoMessageHandlerRegisteredException("Not handler has been specified. Please call " +
+			throw new NoMessageHandlerRegisteredException("No handler has been specified. Please call " +
 					"registerForMessages with a handler before calling this method.");
 		}
 		new AsyncTask<Void, Void, List<Pin>>() {

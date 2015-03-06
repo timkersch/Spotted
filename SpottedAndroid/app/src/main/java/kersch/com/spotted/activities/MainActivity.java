@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TabHost;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -37,7 +38,7 @@ import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 import java.text.DateFormat;
 import java.util.*;
 
-public class MapActivity extends FragmentActivity implements
+public class MainActivity extends FragmentActivity implements
 		GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener,
 		com.google.android.gms.location.LocationListener,
@@ -62,6 +63,13 @@ public class MapActivity extends FragmentActivity implements
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
+
+	// Fragments
+	private CommentFragment commentFragment;
+	private CommentListFragment commentListFragment;
+	private PinListFragment pinListFragment;
+	private AddFragment addFragment;
+
 	// TODO
 	private String lastUpdateTime;
 	// TODO
@@ -72,7 +80,7 @@ public class MapActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 
-		SharedPreferences sp = getSharedPreferences(MapActivity.class.getSimpleName(), Context.MODE_PRIVATE);
+		SharedPreferences sp = getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
 
 		if (getRegistrationId(sp).isEmpty()) {
 			// Start Async task to Register device for Google cloud messages
@@ -168,8 +176,8 @@ public class MapActivity extends FragmentActivity implements
 	 */
 	public void addCommentListFragment(Pin pin) {
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		CommentListFragment clf = CommentListFragment.newInstance(pin);
-		ft.add(R.id.fragment_container, clf);
+		this.commentListFragment = CommentListFragment.newInstance(pin);
+		ft.add(R.id.fragment_container, this.commentListFragment);
 		ft.addToBackStack("commentListFragment");
 		ft.commit();
 	}
@@ -179,8 +187,8 @@ public class MapActivity extends FragmentActivity implements
 	 */
 	public void addCommentFragment(Pin pin) {
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		CommentFragment cf = CommentFragment.newInstance(pin);
-		ft.add(R.id.fragment_container, cf);
+		this.commentFragment = CommentFragment.newInstance(pin);
+		ft.add(R.id.fragment_container, this.commentFragment);
 		ft.addToBackStack("commentFragment");
 		ft.commit();
 	}
@@ -194,8 +202,8 @@ public class MapActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				FragmentTransaction ft = fragmentManager.beginTransaction();
-				AddFragment fragment = new AddFragment();
-				ft.add(R.id.fragment_container, fragment);
+				addFragment = new AddFragment();
+				ft.add(R.id.fragment_container, addFragment);
 				ft.addToBackStack("addFragment");
 				ft.commit();
 			}
@@ -215,8 +223,8 @@ public class MapActivity extends FragmentActivity implements
 					// TODO
 				} else {
 					FragmentTransaction ft = fragmentManager.beginTransaction();
-					PinListFragment fragment = PinListFragment.newInstance(new ArrayList<>(pinMarkerMap.values()));
-					ft.replace(R.id.list_frame, fragment);
+					pinListFragment = PinListFragment.newInstance(new ArrayList<>(pinMarkerMap.values()));
+					ft.replace(R.id.list_frame, pinListFragment);
 					ft.commit();
 				}
 			}
@@ -244,14 +252,31 @@ public class MapActivity extends FragmentActivity implements
 		});
 	}
 
+	/** Add a like to a specified pin.
+	 * @param pin the pin that has been liked
+	 */
+	public void addLike(Pin pin) {
+		pin.incrementLikes();
+		updatePinList(new ArrayList<>(pinMarkerMap.values()));
+	}
+
+	/** Add a response to a specified pin.
+	 * @param pin the pin to add a response to
+	 * @param message the message to add
+	 */
+	public void addResponse(Pin pin, String message) {
+		pin.addResponse(message);
+		updatePins(new ArrayList<>(pinMarkerMap.values()));
+	}
+
 	/**
-	 * Add a marker to the map
-	 *
+	 * Add a new pin
 	 * @param title                  the title of the marker
 	 * @param message                the message of the marker
 	 * @param lifetimeInMilliseconds the time tha marker is supposed to live
 	 */
 	public void addPin(String title, String message, long lifetimeInMilliseconds) {
+		// TODO check so that user is at specified position
 		addPin(title, message, lifetimeInMilliseconds, currentLocation);
 	}
 
@@ -261,9 +286,10 @@ public class MapActivity extends FragmentActivity implements
 		addPin(pin);
 	}
 
-	// Private method that adds an already created pin to the map
+	// Private method that adds an already created pin to the map and the list
 	private void addPin(Pin pin) {
 		pinMarkerMap.put(map.addMarker(pin.getMarkerOptions()), pin);
+		this.updatePinList(new ArrayList<>(pinMarkerMap.values()));
 	}
 
 	// Removes a marker from the map and from the pinMarkerMap
@@ -281,6 +307,11 @@ public class MapActivity extends FragmentActivity implements
 	}
 
 	public void updatePins(List<Pin> pinList) {
+		updateMapPins(pinList);
+		updatePinList(pinList);
+	}
+
+	private void updateMapPins(List<Pin> pinList) {
 		if (pinList != null) {
 			for (Pin pin : pinList) {
 				if (!pinMarkerMap.values().contains(pin)) {
@@ -294,6 +325,12 @@ public class MapActivity extends FragmentActivity implements
 			}
 		} else {
 			removeAllPins();
+		}
+	}
+
+	private void updatePinList(List<Pin> pinList) {
+		if(this.pinListFragment != null && pinList != null) {
+			this.pinListFragment.updateList(pinList);
 		}
 	}
 
@@ -332,6 +369,11 @@ public class MapActivity extends FragmentActivity implements
 	public void onLocationChanged(Location location) {
 		currentLocation = location;
 		lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+	}
+
+	public void hideKeyboard() {
+		InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 
 	private String getRegistrationId(SharedPreferences sp) {

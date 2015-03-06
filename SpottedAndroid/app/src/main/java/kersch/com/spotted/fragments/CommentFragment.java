@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import kersch.com.spotted.R;
+import kersch.com.spotted.activities.MainActivity;
 import kersch.com.spotted.model.Pin;
 
 /**
@@ -85,12 +86,15 @@ public class CommentFragment extends Fragment implements View.OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		MainActivity activity = (MainActivity)getActivity();
 		if(v.getId() == commit.getId()) {
 			if(comment.getText() != null && comment.getText().length() > 0) {
-				pin.addResponse(comment.getText() + "");
+				activity.addResponse(pin, comment.getText() + "");
+				activity.hideKeyboard();
 				getFragmentManager().popBackStackImmediate();
 			}
 		} else if(v.getId() == cancel.getId()) {
+			activity.hideKeyboard();
 			getFragmentManager().popBackStackImmediate();
 		} else {
 			// TODO
