@@ -35,6 +35,7 @@ import kersch.com.spotted.fragments.CommentListFragment;
 import kersch.com.spotted.fragments.PinListFragment;
 import kersch.com.spotted.model.Pin;
 import kersch.com.spotted.utils.Constants;
+import kersch.com.spotted.model.MapWithFilter;
 import kersch.com.spotted.utils.NoMessageHandlerRegisteredException;
 
 import java.text.DateFormat;
@@ -50,9 +51,9 @@ public class MainActivity extends FragmentActivity implements
 		CommentFragment.OnFragmentInteractionListener,
 		PopupMenu.OnMenuItemClickListener {
 
-	private final Map<Marker, Pin> pinMarkerMap = new HashMap<>();
+	private final MapWithFilter<Marker, Pin> pinMarkerMap = new MapWithFilter<>();
 	private final FragmentManager fragmentManager = getFragmentManager();
-	// This handler recieves messages when the database is updated
+	// This handler receives messages when the database is updated
 	private final Handler dbHandler = new Handler() {
 		@Override
 		public void handleMessage(Message message) {
@@ -66,6 +67,7 @@ public class MainActivity extends FragmentActivity implements
 	private GoogleApiClient googleApiClient;
 	private Location currentLocation;
 	private LocationRequest locationRequest;
+	private int filter = Constants.NO_FILTER;
 
 	// Fragments
 	private CommentFragment commentFragment;
@@ -265,7 +267,7 @@ public class MainActivity extends FragmentActivity implements
 					}
 				} else {
 					if(actionMenu != null) {
-						actionMenu.setGroupVisible(R.id.filter_group, false);
+						actionMenu.setGroupVisible(R.id.filter_group, true);
 						actionMenu.setGroupVisible(R.id.sort_group, true);
 					}
 					FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -444,6 +446,20 @@ public class MainActivity extends FragmentActivity implements
 		if (!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
 			googleApiClient.connect();
 		}
+	}
+
+	// TODO
+	private List<Pin> getPinsWithFilter() {
+		if(filter == Constants.CREATION_FILTER) {
+
+		} else if(filter == Constants.EXPIRES_FILTER) {
+
+		} else if(filter == Constants.RADIUS_FILTER) {
+
+		} else {
+
+		}
+		return null;
 	}
 
 	protected void startLocationUpdates() {

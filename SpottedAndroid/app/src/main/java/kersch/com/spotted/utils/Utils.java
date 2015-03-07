@@ -26,30 +26,70 @@ public class Utils {
 	public static String getFormatedTime(long milliseconds) {
 		// More than one week, return weeks
 		if(milliseconds > 7 * Constants.ONE_DAY_IN_MS) {
-		double weeks = milliseconds % (7 * Constants.ONE_DAY_IN_MS - 1);
-		return weeks == 1 ? weeks + " week" : weeks + " weeks";
+		double weeks = milliseconds / (7 * Constants.ONE_DAY_IN_MS);
+		return (int)weeks == 1 ? (int)weeks + " week" : (int)weeks + " weeks";
 
 		// More than one day, return days
 		} else if(milliseconds > Constants.ONE_DAY_IN_MS) {
-			double days = milliseconds % (Constants.ONE_DAY_IN_MS - 1);
-			return days == 1 ? days + " day" : days + " days";
+			double days = milliseconds / (Constants.ONE_DAY_IN_MS);
+			return (int)days == 1 ? (int)days + " day" : (int)days + " days";
 
 		// More than one hour, return hours
 		} else if(milliseconds > Constants.ONE_DAY_IN_MS/24) {
-			double hours = milliseconds % (Constants.ONE_DAY_IN_MS / 24 - 1);
-			return hours == 1 ? hours + " hour" : hours + " hours";
+			double hours = milliseconds / (Constants.ONE_DAY_IN_MS / 24);
+			return (int)hours == 1 ? (int)hours + " hour" : (int)hours + " hours";
 
 		// More than one minute, return minutes
 		} else if(milliseconds > Constants.ONE_DAY_IN_MS/(24*60)) {
-			double minutes = milliseconds % (Constants.ONE_DAY_IN_MS/(24*60) - 1);
-			return minutes == 1 ? minutes + " minute" : minutes + " minutes";
+			double minutes = milliseconds / (Constants.ONE_DAY_IN_MS/(24*60));
+			return (int)minutes == 1 ? (int)minutes + " minute" : (int)minutes + " minutes";
 
 		// Else, return seconds
 		} else {
-			return milliseconds * 0.001 + " seconds";
+			return (int)(milliseconds * 0.001) + " seconds";
 		}
 	}
 
+	/** Returns a string on the form x Months or y Week to milliseconds
+	 * @param s the string to be converted
+	 * @return the time in milliseconds
+	 */
+	public static long stringToMilliseconds(String s) {
+		String regex = "\\D";
+		String ns = s.toLowerCase();
+
+		if(ns.contains("month") || ns.contains("months")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * 30 * (long)Constants.ONE_DAY_IN_MS;
+
+		} else if(ns.contains("week") || ns.contains("weeks")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * 7 * (long)Constants.ONE_DAY_IN_MS;
+
+		} else if(ns.contains("day") || ns.contains("days")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * (long)Constants.ONE_DAY_IN_MS;
+
+		} else if(ns.contains("hour") || ns.contains("hours")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * (long)Constants.ONE_DAY_IN_MS/24;
+
+		} else if(ns.contains("minute") || ns.contains("minutes")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * (long)Constants.ONE_DAY_IN_MS/(24*60);
+
+		} else if(ns.contains("second") || ns.contains("seconds")) {
+			long time = Long.parseLong(ns.replaceAll(regex, ""));
+			return time * (long)Constants.ONE_DAY_IN_MS/(24*60*60);
+		} else {
+			return -1;
+		}
+	}
+
+	/** Converts a GeoPt to a LatLng object.
+	 * @param geoPt the GeoPt to be converted
+	 * @return a LatLng equal to the parameter
+	 */
 	public static LatLng toLatLng(GeoPt geoPt) {
 		return new LatLng((double)geoPt.getLatitude(), (double)geoPt.getLongitude());
 	}

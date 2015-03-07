@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import kersch.com.spotted.R;
 import kersch.com.spotted.activities.MainActivity;
+import kersch.com.spotted.utils.Utils;
 
 /**
  * A Fragment that shows an addView
@@ -68,8 +69,10 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 		if (v.getId() == R.id.commit_pin) {
 			EditText title = (EditText) getView().findViewById(R.id.enter_title);
 			EditText message = (EditText) getView().findViewById(R.id.enter_message);
-			// TODO the lifetime
-			activity.addPin(title.getText().toString(), message.getText().toString(), 30000);
+			Spinner lifeTime = (Spinner) getView().findViewById(R.id.lifetime_spinner);
+			String lifeTimeText = lifeTime.getSelectedItem().toString();
+			activity.addPin(title.getText().toString(), message.getText().toString(),
+					Utils.stringToMilliseconds(lifeTimeText));
 			activity.hideKeyboard();
 			getFragmentManager().popBackStackImmediate();
 		} else if (v.getId() == R.id.cancel_pin) {

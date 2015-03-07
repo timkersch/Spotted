@@ -21,4 +21,9 @@ public class Constants {
 
 	// One day in milliseconds
 	public static final double ONE_DAY_IN_MS = 8.64 * Math.pow(10,7);
+
+	public static final int NO_FILTER = 0x100;
+	public static final int RADIUS_FILTER = 0x101;
+	public static final int CREATION_FILTER = 0x102;
+	public static final int EXPIRES_FILTER = 0x103;
 }
