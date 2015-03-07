@@ -4,11 +4,15 @@
         <item android:id="@+id/no_filter"
               android:checked="true"
               android:title="No filter"/>
-        <item android:id="@+id/distance_filter"
-              android:title="100 meters from me" />
         <item android:id="@+id/recent_filter"
-              android:title="Recently updated" />
+              android:title="Recently changed" />
         <item android:id="@+id/expires_filter"
               android:title="Expires soon" />
+        <item android:id="@+id/distance100_filter"
+              android:title="100 meter radius" />
+        <item android:id="@+id/distance200_filter"
+              android:title="200 meter radius" />
+        <item android:id="@+id/distance500_filter"
+              android:title="500 meter radius" />
     </group>
 </menu>

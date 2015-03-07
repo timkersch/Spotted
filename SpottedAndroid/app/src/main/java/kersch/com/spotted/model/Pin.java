@@ -275,7 +275,7 @@ public class Pin implements Parcelable, Comparable<Pin> {
 		}
 	};
 
-	// Describe contet of parcel
+	// Describe content of parcel
 	public int describeContents() {
 		return 0;
 	}

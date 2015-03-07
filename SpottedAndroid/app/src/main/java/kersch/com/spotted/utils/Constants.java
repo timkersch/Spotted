@@ -19,6 +19,6 @@ public class Constants {
 	// ID for database update messages
 	public static final int DATABASE_UPDATE_ID = 0x01;
 
-	// Earth radius
-	public static final double EARTH_RADIUS = 6371;
+	// One day in milliseconds
+	public static final double ONE_DAY_IN_MS = 8.64 * Math.pow(10,7);
 }

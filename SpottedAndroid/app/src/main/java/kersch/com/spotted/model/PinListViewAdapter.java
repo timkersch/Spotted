@@ -71,7 +71,7 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		float[] distance = new float[3];
+		float[] distance = new float[1];
 		Location.distanceBetween(currentPosition.latitude, currentPosition.longitude,
 				pin.getLocation().getLatitude(), pin.getLocation().getLongitude(), distance);
 
@@ -99,7 +99,8 @@ public class PinListViewAdapter extends ArrayAdapter<Pin> {
 				listener.likeButtonClicked(pin);
 			}
 		});
-
+		holder.expires.setText("Expires: " + Utils.getFormatedTime(pin.getLifetimeInMilliseconds() -
+				(System.currentTimeMillis() - pin.getDate().getValue())));
 		holder.distance.setText("Distance: " + Math.round(distance[0]) + "m");
 
 		return convertView;

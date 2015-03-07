@@ -173,9 +173,12 @@ public class MainActivity extends FragmentActivity implements
 
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {
+		// TODO fix radio buttons
 		switch (item.getItemId()) {
 			case R.id.no_filter:
-			case R.id.distance_filter:
+			case R.id.distance100_filter:
+			case R.id.distance200_filter:
+			case R.id.distance500_filter:
 			case R.id.recent_filter:
 			case R.id.expires_filter:
 			case R.id.date_sort:
