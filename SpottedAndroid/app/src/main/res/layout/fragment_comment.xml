@@ -1,0 +1,36 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             tools:context="kersch.com.spotted.fragments.CommentFragment" android:background="#ff313131">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:background="#ff313131">
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/comment_field" android:layout_gravity="left|top" android:layout_margin="20dp"
+                android:hint="Add comment"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:layout_below="@+id/comment_field"
+                android:layout_alignParentLeft="true" android:layout_alignParentStart="true">
+            <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cancel"
+                    android:id="@+id/cancel_comment" android:layout_weight="0.5" android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="10dp"/>
+            <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Commit"
+                    android:id="@+id/commit_comment" android:layout_weight="0.5" android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>
